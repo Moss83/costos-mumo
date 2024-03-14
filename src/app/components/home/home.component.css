@@ -1,0 +1,22 @@
+:host ::ng-deep .titulos {
+    font-size: x-large;
+}
+
+.example-card {
+    background-color: #D1D5DB;
+    max-height: 130px;
+}
+
+.contenido {
+    margin-bottom: -5%;
+}
+
+.card-header {
+    margin-top: -2%;
+}
+
+.spinner {
+    justify-self: center;
+    justify-content: center;
+    justify-items: center;
+}
