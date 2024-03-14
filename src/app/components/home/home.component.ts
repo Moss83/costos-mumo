@@ -17,6 +17,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {DomSanitizer} from '@angular/platform-browser';
 import { Receta } from '../../interfaces/receta';
 import { Ingrediente } from '../../interfaces/ingrediente';
+import { IngredienteReceta } from '../../interfaces/ingrediente-receta';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 const PLUS_ICON =
@@ -64,126 +65,55 @@ export class HomeComponent implements OnInit {
   myControl = new FormControl<string | Receta>('');
   recetas: Receta[] = [];
   ingredientes: Ingrediente[] = [];
+  ingredientesRecetas: IngredienteReceta[] = [];
 
-  options: Receta[] = [
-    {
-      nombre: 'Tarta de choclo con tomate',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    },
-    {
-      nombre: 'Arroz con pollo',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    },
-    {
-      nombre: 'Espinaca',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    },
-    {
-      nombre: 'Ravioles de ricota',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    },
-    {
-      nombre: 'Ravioles de pollo',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    },
-    {
-      nombre: 'Ensalada de chinchulines',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    },
-    {
-      nombre: 'Omellete de tripa gorda',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    },
-    {
-      nombre: 'Omellete de seso',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    },
-    {
-      nombre: 'Muffins 4 quesos',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    },
-    {
-      nombre: 'Pan de molde integral con chía',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    },
-    {
-      nombre: 'Pan de molde blanco',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    },
-    {
-      nombre: 'Pan de molde dulce de vainilla',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    },
-    {
-      nombre: 'Budín marmolado',
-      rinde_valor: 1,
-      rinde_unidad: 'porción',
-      idreceta: 1,
-      links: []
-    }
-  ];
   filteredOptions: Observable<Receta[]> = new Observable<Receta[]>;
   recetasFiltradas: Receta[] = this.recetas;
   recetaEscrita: string = '';
 
   ngOnInit() {
-    fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/?limit=100")
+    fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/?limit=1000")
     .then((response) => response.json())
     .then((r) => {
       this.recetas = r.items;
-      this.recetasFiltradas = r.items;
-      this.filteredOptions = this.myControl.valueChanges.pipe(
-        startWith(''),
-        map(value => {
-          const nombre = typeof value === 'string' ? value : value?.nombre;
-          return nombre ? this._filter(nombre as string) : this.recetas.slice();
-        })
-      );
     })
     .then(() => {
-      fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/?limit=100")
+      fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/?limit=1000")
       .then((response) => response.json())
       .then((r) => {
         this.ingredientes = r.items;
-        this.loading = false;
       })
-    })
+      .then(() => {
+        fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientesreceta/?limit=1000")
+        .then((response) => response.json())
+        .then((r) => {
+          this.ingredientesRecetas = r.items;
+          for (let receta of this.recetas) {
+            let costo: number = 0;
+            let ingredientesEnReceta = this.ingredientesRecetas.filter((registro) => registro.idreceta === receta.idreceta);
+            for (let ingrediente of ingredientesEnReceta) {
+              let ingrBase = this.ingredientes.find((ing) => ing.idingrediente === ingrediente.idingrediente);
+              if (ingrBase?.unidadmedida === ingrediente.unidadcantidad) {
+                costo += ingrediente.cantidad * ingrBase.precio;
+              }
+              else if ((ingrBase?.unidadmedida === 'Kg' || ingrBase?.unidadmedida === 'L') && (ingrediente.unidadcantidad === 'gr' || ingrediente.unidadcantidad === 'ml')){
+                costo += ingrediente.cantidad * ingrBase.precio / 1000;
+              }
+            }
+            receta.costo = parseFloat(costo.toFixed(2));
+          }
+          this.recetasFiltradas = this.recetas;
+          this.filteredOptions = this.myControl.valueChanges.pipe(
+            startWith(''),
+            map(value => {
+              const nombre = typeof value === 'string' ? value : value?.nombre;
+              return nombre ? this._filter(nombre as string) : this.recetas.slice();
+            })
+          )
+          this.loading = false;
+        })
+      })
+    });
   }
 
   displayFn(receta: Receta): string {
