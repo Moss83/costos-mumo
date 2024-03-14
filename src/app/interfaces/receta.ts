@@ -3,5 +3,6 @@ export interface Receta {
     nombre: string;
     rinde_valor: number;
     rinde_unidad: string;
+    costo: number;
     links: any;
 }
