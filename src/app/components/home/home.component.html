@@ -1,0 +1,64 @@
+<div class="m-5">
+    <div class="flex w-[28rem] h-12 bg-gray-300 rounded-full justify-around items-center">
+        <button [ngStyle]="{'background-color': (selectedTab === 1) ? '#EC4899' : '#D1D5DB'}" class="rounded-full w-[13rem] h-8" (click)="changeTab(1)">
+            <p [ngStyle]="{'color': (selectedTab === 1) ? '#FFFFFF' : '#000000'}" class="text-xl font-medium pt-0.5">Recetas</p>
+        </button>
+        <button [ngStyle]="{'background-color': (selectedTab === 2) ? '#EC4899' : '#D1D5DB'}" class="rounded-full w-[13rem] h-8" (click)="changeTab(2)">
+            <p [ngStyle]="{'color': (selectedTab === 2) ? '#FFFFFF' : '#000000'}" class="text-xl font-medium pt-0.5">Ingredientes</p>
+        </button>
+    </div>
+    
+    <ng-container *ngIf="selectedTab === 1 || selectedTab === 2">
+        <div class="flex flex-row w-full h-auto justify-between mt-8">
+            <div>
+                <form class="example-form">
+                    <mat-form-field class="w-[28rem]">
+                    <mat-label>Buscar receta</mat-label>
+                    <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto" (ngModelChange)="recetaEscritaVacia()" class="rounded-xl">
+                    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+                        @for (option of filteredOptions | async; track option) {
+                            <mat-option [value]="option">{{option.nombre}}</mat-option>
+                        }
+                    </mat-autocomplete>
+                    </mat-form-field>
+                </form>
+            </div>
+            <button class="text-xl text-white font-medium pt-1 bg-pink-500 rounded-xl w-[13rem] h-12">
+                <p>
+                    <mat-icon svgIcon="plus-sign" aria-hidden="true" aria-label="Plus sign" class="mt-1 mr-2"></mat-icon>
+                    Nueva receta
+                </p>
+            </button>
+        </div>
+
+        <ng-container *ngIf="loading">
+            <div class="flex flex-row justify-center my-[168px]">
+                <mat-spinner></mat-spinner>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="!loading">
+            <div class="overflow-y-scroll h-[26rem] grid grid-cols-4 gap-4 pr-4 pb-2">
+                <ng-container *ngFor="let receta of recetasFiltradas; let i = index">
+                    <mat-card class="example-card" [id]="i.toString()" (mouseover)="addStyle(i.toString())" (mouseout)="removeStyle(i.toString())">
+                        <mat-card-header class="card-header">
+                            <mat-card-title-group>
+                                <mat-card-title>{{ receta.nombre }}</mat-card-title>
+                            </mat-card-title-group>
+                        </mat-card-header>
+                        <mat-card-content class="contenido">
+                            <div class="flex flex-row justify-between mt-2">
+                                <p class="text-xl font-semibold">Rinde</p>
+                                <p class="text-xl font-semibold">{{ receta.rinde_valor }} {{ receta.rinde_unidad }}</p>
+                            </div>
+                            <div class="flex flex-row justify-between -pb-8">
+                                <p class="text-xl font-semibold">Costo</p>
+                                <p class="text-xl font-semibold">$ 2500</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </ng-container>
+            </div>
+        </ng-container>
+    </ng-container>
+</div>
