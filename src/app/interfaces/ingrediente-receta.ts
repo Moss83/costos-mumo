@@ -4,5 +4,4 @@ export interface IngredienteReceta {
     idreceta: number;
     cantidad: number;
     unidadcantidad: string;
-    links: any;
 }
