@@ -62,54 +62,59 @@ export class HomeComponent implements OnInit {
 
   selectedTab: number = 1;
 
-  myControl = new FormControl<string | Receta>('');
+  botonesDisabled: boolean = true;
+
+  myControlReceta = new FormControl<string | Receta>('');
+  myControlIngrediente = new FormControl<string | Ingrediente>('');
   recetas: Receta[] = [];
   ingredientes: Ingrediente[] = [];
   ingredientesRecetas: IngredienteReceta[] = [];
 
-  filteredOptions: Observable<Receta[]> = new Observable<Receta[]>;
-  recetasFiltradas: Receta[] = this.recetas;
-  recetaEscrita: string = '';
+  filteredRecetas: Observable<Receta[]> = new Observable<Receta[]>;
+  filteredIngredientes: Observable<Ingrediente[]> = new Observable<Ingrediente[]>;
+  recetasFiltradas: Receta[] = [];
+  ingredientesFiltrados: Ingrediente[] = [];
+  ingredientesOriginal: Ingrediente[] = [];
 
   ngOnInit() {
     fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/?limit=1000")
     .then((response) => response.json())
+    .catch((e) => console.log(e))
     .then((r) => {
       this.recetas = r.items;
     })
     .then(() => {
-      fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/?limit=1000")
+      fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/?limit=1000&q={\"$orderby\":{\"nombre\": \"asc\"}}")
       .then((response) => response.json())
+      .catch((e) => console.log(e))
       .then((r) => {
         this.ingredientes = r.items;
       })
       .then(() => {
         fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientesreceta/?limit=1000")
         .then((response) => response.json())
+        .catch((e) => console.log(e))
         .then((r) => {
           this.ingredientesRecetas = r.items;
-          for (let receta of this.recetas) {
-            let costo: number = 0;
-            let ingredientesEnReceta = this.ingredientesRecetas.filter((registro) => registro.idreceta === receta.idreceta);
-            for (let ingrediente of ingredientesEnReceta) {
-              let ingrBase = this.ingredientes.find((ing) => ing.idingrediente === ingrediente.idingrediente);
-              if (ingrBase?.unidadmedida === ingrediente.unidadcantidad) {
-                costo += ingrediente.cantidad * ingrBase.precio;
-              }
-              else if ((ingrBase?.unidadmedida === 'Kg' || ingrBase?.unidadmedida === 'L') && (ingrediente.unidadcantidad === 'gr' || ingrediente.unidadcantidad === 'ml')){
-                costo += ingrediente.cantidad * ingrBase.precio / 1000;
-              }
-            }
-            receta.costo = parseFloat(costo.toFixed(2));
-          }
-          this.recetasFiltradas = this.recetas;
-          this.filteredOptions = this.myControl.valueChanges.pipe(
+
+          this.calcularCostosRecetas();
+
+          this.ingredientes.forEach((ing) => this.ingredientesOriginal.push(Object.assign({}, ing)));
+          this.ingredientes.forEach((ing) => this.ingredientesFiltrados.push(Object.assign({}, ing)));
+          this.filteredRecetas = this.myControlReceta.valueChanges.pipe(
             startWith(''),
             map(value => {
               const nombre = typeof value === 'string' ? value : value?.nombre;
-              return nombre ? this._filter(nombre as string) : this.recetas.slice();
+              return nombre ? this._filterRecetas(nombre as string) : this.recetas.slice();
             })
-          )
+          );
+          this.filteredIngredientes = this.myControlIngrediente.valueChanges.pipe(
+            startWith(''),
+            map(value => {
+              const nombre = typeof value === 'string' ? value : value?.nombre;
+              return nombre ? this._filterIngredientes(nombre as string) : this.ingredientes.slice();
+            })
+          );
           this.loading = false;
         })
       })
@@ -120,10 +125,35 @@ export class HomeComponent implements OnInit {
     return receta && receta.nombre ? receta.nombre : '';
   }
 
-  private _filter(nombre: string): Receta[] {
+  private _filterRecetas(nombre: string): Receta[] {
     const filterValue = nombre.toLowerCase();
     this.recetasFiltradas = this.recetas.filter(option => option.nombre.toLowerCase().includes(filterValue));
     return this.recetasFiltradas;
+  }
+
+  private _filterIngredientes(nombre: string): Ingrediente[] {
+    const filterValue = nombre.toLowerCase();
+    this.ingredientesFiltrados = this.ingredientes.filter(option => option.nombre.toLowerCase().includes(filterValue));
+    return this.ingredientesFiltrados;
+  }
+
+  calcularCostosRecetas() {
+    for (let receta of this.recetas) {
+      let costo: number = 0;
+      let ingredientesEnReceta = this.ingredientesRecetas.filter((registro) => registro.idreceta === receta.idreceta);
+      for (let ingrediente of ingredientesEnReceta) {
+        let ingrBase = this.ingredientes.find((ing) => ing.idingrediente === ingrediente.idingrediente);
+        if (ingrBase?.unidadmedida === ingrediente.unidadcantidad) {
+          costo += ingrediente.cantidad * ingrBase.precio;
+        }
+        else if ((ingrBase?.unidadmedida === 'Kg' || ingrBase?.unidadmedida === 'Lt') && (ingrediente.unidadcantidad === 'gr' || ingrediente.unidadcantidad === 'ml')){
+          costo += ingrediente.cantidad * ingrBase.precio / 1000;
+        }
+      }
+      receta.costo = parseFloat(costo.toFixed(2));
+    }
+    this.recetasFiltradas = [];
+    this.recetas.forEach((rec) => this.recetasFiltradas.push(Object.assign({}, rec)));
   }
 
   changeTab(tab: number) {
@@ -131,12 +161,18 @@ export class HomeComponent implements OnInit {
   }
 
   recetaEscritaVacia() {
-    if (this.myControl.value?.toString().length === 0){
+    if (this.myControlReceta.value?.toString().length === 0){
       this.recetasFiltradas = this.recetas;
     }
   }
 
-  addStyle(id: string) {
+  ingredienteEscritoVacio() {
+    if (this.myControlIngrediente.value?.toString().length === 0){
+      this.ingredientesFiltrados = this.ingredientes;
+    }
+  }
+
+  addStyleReceta(id: string) {
     let element = document.getElementById(id);
     if (element != null){
       element.style.backgroundColor = '#EC4899';
@@ -144,11 +180,71 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  removeStyle(id: string) {
+  removeStyleReceta(id: string) {
     let element = document.getElementById(id);
     if (element != null){
       element.style.backgroundColor = '#D1D5DB';
       element.style.color = 'black';
     }
+  }
+
+  addStyleIngrediente(id: string) {
+    let element = document.getElementById(id);
+    if (element != null){
+      element.style.backgroundColor = '#E8E8E8';
+    }
+  }
+
+  removeStyleIngrediente(id: string) {
+    let element = document.getElementById(id);
+    if (element != null){
+      element.style.backgroundColor = '#FFFFFF';
+    }
+  }
+
+  cambiarPrecioIngrediente(ingrediente: Ingrediente, event: Event) {
+    let nuevoPrecio = parseFloat((event.target as HTMLInputElement).value);
+    if (!Number.isNaN(nuevoPrecio)){
+      ingrediente.precio = nuevoPrecio;
+      this.ingredientesFiltrados[this.ingredientesFiltrados.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)] = ingrediente;
+      this.ingredientes[this.ingredientes.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)] = ingrediente;
+      this.botonesDisabled = false;
+    }
+    else {
+      (event.target as HTMLInputElement).value = this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)].precio.toString();
+    }
+  }
+
+  reestablecerPrecios() {
+    this.ingredientesFiltrados.forEach((ing) => ing.precio = this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ingr) => ingr.idingrediente === ing.idingrediente)].precio);
+    this.ingredientes.forEach((ing) => ing.precio = this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ingr) => ingr.idingrediente === ing.idingrediente)].precio);
+    this.botonesDisabled = true;
+  }
+
+  async guardarPrecios() {
+    for (let ingrediente of this.ingredientes) {
+      if (ingrediente.precio !== this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)].precio) {
+        let sendIngrediente = {
+          nombre: ingrediente.nombre,
+          unidadmedida: ingrediente.unidadmedida,
+          precio: ingrediente.precio
+        };
+        await fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/" + ingrediente.idingrediente.toString(), {
+          method: "PUT",
+          body: JSON.stringify(sendIngrediente),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .catch((e) => console.log(e))
+        .then(() => {
+          this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)].precio = ingrediente.precio;
+          this.ingredientes[this.ingredientes.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)].precio = ingrediente.precio;
+        })
+      }
+    }
+    this.botonesDisabled = true;
+    this.calcularCostosRecetas();
+    alert("Precios actualizados exitosamente!");
   }
 }
