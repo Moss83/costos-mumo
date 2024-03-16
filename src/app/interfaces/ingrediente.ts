@@ -3,5 +3,4 @@ export interface Ingrediente {
     nombre: string;
     unidadmedida: string;
     precio: number;
-    links: any;
 }

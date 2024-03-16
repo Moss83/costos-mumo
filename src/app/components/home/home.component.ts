@@ -9,7 +9,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
@@ -19,6 +19,7 @@ import { Receta } from '../../interfaces/receta';
 import { Ingrediente } from '../../interfaces/ingrediente';
 import { IngredienteReceta } from '../../interfaces/ingrediente-receta';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { DialogOverviewDialogIngrediente } from '../dialog-overview-dialog/dialog-overview-dialog-ingrediente.component';
 
 const PLUS_ICON =
   `
@@ -29,6 +30,7 @@ const PLUS_ICON =
   </svg>
   `;
 
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -38,12 +40,12 @@ const PLUS_ICON =
     MatButtonModule,
     MatIconModule,
     MatPaginatorModule,
-    MatDialogModule,
     MatInputModule,
     MatSlideToggleModule,
     MatSelectModule,
     MatFormFieldModule,
     MatProgressSpinnerModule,
+    DialogOverviewDialogIngrediente,
     AsyncPipe,
     FormsModule,
     ReactiveFormsModule,
@@ -54,7 +56,7 @@ const PLUS_ICON =
 })
 
 export class HomeComponent implements OnInit {
-  constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
+  constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, public dialog: MatDialog) {
     iconRegistry.addSvgIconLiteral('plus-sign', sanitizer.bypassSecurityTrustHtml(PLUS_ICON));
   }
 
@@ -77,23 +79,23 @@ export class HomeComponent implements OnInit {
   ingredientesOriginal: Ingrediente[] = [];
 
   ngOnInit() {
-    fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/?limit=1000")
+    fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/?limit=1000&q={\"$orderby\":{\"nombre\": \"asc\"}}")
     .then((response) => response.json())
-    .catch((e) => console.log(e))
+    .catch((e) => console.error(e))
     .then((r) => {
       this.recetas = r.items;
     })
     .then(() => {
       fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/?limit=1000&q={\"$orderby\":{\"nombre\": \"asc\"}}")
       .then((response) => response.json())
-      .catch((e) => console.log(e))
+      .catch((e) => console.error(e))
       .then((r) => {
         this.ingredientes = r.items;
       })
       .then(() => {
         fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientesreceta/?limit=1000")
         .then((response) => response.json())
-        .catch((e) => console.log(e))
+        .catch((e) => console.error(e))
         .then((r) => {
           this.ingredientesRecetas = r.items;
 
@@ -202,6 +204,20 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  addStyleBotonNuevo(id: string) {
+    let element = document.getElementById(id);
+    if (element != null){
+      element.style.backgroundColor = '#F472B6';
+    }
+  }
+
+  removeStyleBotonNuevo(id: string) {
+    let element = document.getElementById(id);
+    if (element != null){
+      element.style.backgroundColor = '#EC4899';
+    }
+  }
+
   cambiarPrecioIngrediente(ingrediente: Ingrediente, event: Event) {
     let nuevoPrecio = parseFloat((event.target as HTMLInputElement).value);
     if (!Number.isNaN(nuevoPrecio)){
@@ -236,7 +252,7 @@ export class HomeComponent implements OnInit {
             'Content-Type': 'application/json'
           }
         })
-        .catch((e) => console.log(e))
+        .catch((e) => console.error(e))
         .then(() => {
           this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)].precio = ingrediente.precio;
           this.ingredientes[this.ingredientes.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)].precio = ingrediente.precio;
@@ -246,5 +262,47 @@ export class HomeComponent implements OnInit {
     this.botonesDisabled = true;
     this.calcularCostosRecetas();
     alert("Precios actualizados exitosamente!");
+  }
+
+  openDialogIngrediente(): void {
+    const dialogRef = this.dialog.open(DialogOverviewDialogIngrediente);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        let sendIngrediente = {
+          nombre: result.nombre,
+          unidadmedida: result.unidadmedida,
+          precio: result.precio
+        }
+
+        fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/", {
+          method: "POST",
+          body: JSON.stringify(sendIngrediente),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .catch((e) => console.error(e))
+        .then(() => {
+          fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/?limit=1000&q={\"$orderby\":{\"nombre\": \"asc\"}}")
+          .then((response) => response.json())
+          .catch((e) => console.error(e))
+          .then((r) => {
+            this.ingredientes = r.items;
+            this.ingredientesOriginal = [];
+            this.ingredientesFiltrados = [];
+            this.ingredientes.forEach((ing) => this.ingredientesOriginal.push(Object.assign({}, ing)));
+            this.ingredientes.forEach((ing) => this.ingredientesFiltrados.push(Object.assign({}, ing)));
+            this.filteredIngredientes = this.myControlIngrediente.valueChanges.pipe(
+              startWith(''),
+              map(value => {
+                const nombre = typeof value === 'string' ? value : value?.nombre;
+                return nombre ? this._filterIngredientes(nombre as string) : this.ingredientes.slice();
+              })
+            );
+          })
+        })
+      }
+    });
   }
 }

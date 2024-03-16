@@ -23,11 +23,9 @@
                     </mat-form-field>
                 </form>
             </div>
-            <button class="text-xl text-white font-medium pt-1 bg-pink-500 rounded-xl w-[13rem] h-12">
-                <p>
-                    <mat-icon svgIcon="plus-sign" aria-hidden="true" aria-label="Plus sign" class="mt-1 mr-2"></mat-icon>
-                    Nueva receta
-                </p>
+            <button class="flex justify-center items-center space-x-2 text-xl text-white font-medium pt-1 bg-pink-500 rounded-xl w-[13rem] h-12" id="receta" (mouseover)="addStyleBotonNuevo('receta')" (mouseout)="removeStyleBotonNuevo('receta')">
+                <mat-icon svgIcon="plus-sign" aria-hidden="true" aria-label="Plus sign" class="mb-2 mr-2"></mat-icon>
+                <p class="pt-2">Nueva receta</p>
             </button>
         </div>
 
@@ -77,11 +75,9 @@
                     </mat-form-field>
                 </form>
             </div>
-            <button class="text-xl text-white font-medium pt-1 bg-pink-500 rounded-xl w-[16rem] h-12">
-                <p>
-                    <mat-icon svgIcon="plus-sign" aria-hidden="true" aria-label="Plus sign" class="mt-1 mr-2"></mat-icon>
-                    Nuevo ingrediente
-                </p>
+            <button class="flex justify-center items-center space-x-2 text-xl text-white font-medium pt-1 bg-pink-500 rounded-xl w-[16rem] h-12 relative" id="ingrediente" (mouseover)="addStyleBotonNuevo('ingrediente')" (mouseout)="removeStyleBotonNuevo('ingrediente')" (click)="openDialogIngrediente()">
+                <mat-icon svgIcon="plus-sign" aria-hidden="true" aria-label="Plus sign" class="mb-2 mr-2"></mat-icon>
+                <p class="pt-2">Nuevo ingrediente</p>
             </button>
         </div>
         <div class="flex flex-col w-2/3 ml-60">
@@ -96,8 +92,7 @@
                                 <div class="absolute -left-7 mt-1">
                                     <p>$</p>
                                 </div>
-                                <div class="">
-                                    <!-- <p class="pt-1 px-2">{{ ingrediente.precio | number: '1.2-2' }}</p> -->
+                                <div>
                                     <input type="text" inputmode="numeric" value="{{ ingrediente.precio | number: '1.2-2'}}" [value]="ingrediente.precio | number: '1.2-2'" (change)="cambiarPrecioIngrediente(ingrediente, $event)" class="w-32 h-9 -ml-2 mb-3 border-black rounded-lg border-2 pl-2">
                                 </div>
                                 <div class="absolute left-32 mt-1">
@@ -112,10 +107,10 @@
                 </div>
             </div>
             <div class="flex flex-row mt-4 space-x-4 justify-end">
-                <button [disabled]="botonesDisabled" [ngStyle]="{'background-color': botonesDisabled ? '#888888' : '#D1D5DB', 'color': botonesDisabled ? '#DDDDDD' : '#000000'}" class="text-xl font-medium pt-1 rounded-xl w-[9rem] h-10 pt-1.5" (click)="reestablecerPrecios()">
+                <button [disabled]="botonesDisabled" [ngStyle]="{'background-color': botonesDisabled ? '#888888' : '#D1D5DB', 'color': botonesDisabled ? '#DDDDDD' : '#000000'}" class="text-xl font-medium rounded-xl w-[9rem] h-10 pt-1.5" (click)="reestablecerPrecios()">
                     <p>Reestablecer</p>
                 </button>
-                <button [disabled]="botonesDisabled" [ngStyle]="{'background-color': botonesDisabled ? '#888888' : '#EC4899', 'color': botonesDisabled ? '#DDDDDD' : '#FFFFFF'}" class="text-xl text-white font-medium pt-1 bg-pink-500 rounded-xl w-[9rem] h-10 pt-1.5" (click)="guardarPrecios()">
+                <button [disabled]="botonesDisabled" [ngStyle]="{'background-color': botonesDisabled ? '#888888' : '#EC4899', 'color': botonesDisabled ? '#DDDDDD' : '#FFFFFF'}" class="text-xl text-white font-medium bg-pink-500 rounded-xl w-[9rem] h-10 pt-1.5" (click)="guardarPrecios()">
                     <p>Guardar</p>
                 </button>
             </div>

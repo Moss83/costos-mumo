@@ -1,0 +1,34 @@
+<div class="flex flex-col justify-between items-center py-4 bg-indigo-600 w-[50rem] h-64">
+    <p class="text-3xl text-white font-medium">Nuevo Ingrediente</p>
+    <div class="flex items-center text-2xl font-medium justify-between bg-white rounded-2xl w-11/12 h-14 px-4 pt-3">
+        <div>
+            <input type="text" value="{{ nuevoIngrediente.nombre }}" [value]="nuevoIngrediente.nombre" (change)="cambiarNombreIngrediente($event)" class="w-96 h-9 -ml-2 mb-3 border-black rounded-lg border-2 px-2">
+        </div>
+        <div class="flex flex-row w-44 relative">
+            <div class="absolute -left-10 mt-1">
+                <p>$</p>
+            </div>
+            <div>
+                <input type="text" inputmode="numeric" value="{{ nuevoIngrediente.precio | number: '1.2-2'}}" [value]="nuevoIngrediente.precio | number: '1.2-2'" (change)="cambiarPrecioIngrediente($event)" class="w-32 h-9 -ml-5 mb-3 border-black rounded-lg border-2 pl-2">
+            </div>
+            <div class="absolute left-28 mt-1">
+                <p>/</p>
+            </div>
+            <div class="absolute left-32">
+                <select class="border-black rounded-lg border-2 h-9" name="unidadmedida" (change)="cambiarUnidadMedidaIngrediente($event)">
+                    <option value="Kg" selected>Kg</option>
+                    <option value="Lt">Lt</option>
+                    <option value="Un">Un</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-row space-x-[17rem]">
+        <button class="text-xl text-black font-medium bg-gray-300 rounded-xl w-[9rem] h-10" (click)="onCancelarClick()">
+            Cancelar
+        </button>
+        <button class="text-xl text-white font-medium bg-pink-500 rounded-xl w-[9rem] h-10" (click)="onAgregarClick()">
+            Agregar
+        </button>
+    </div>
+</div>
