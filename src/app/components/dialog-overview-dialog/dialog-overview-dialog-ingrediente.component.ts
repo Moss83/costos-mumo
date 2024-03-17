@@ -60,4 +60,26 @@ export class DialogOverviewDialogIngrediente {
       let nuevaUnidadMedida = (event.target as HTMLInputElement).value;
       this.nuevoIngrediente.unidadmedida = nuevaUnidadMedida;
     }
+
+    addStyleBoton(id: string) {
+      let element = document.getElementById(id);
+      if (element != null && id === 'agregar'){
+        element.style.backgroundColor = '#F472B6';
+      }
+      else if (element != null && id === 'cancelar') {
+        element.style.backgroundColor = '#E5E7EB';
+      }
+    }
+
+    removeStyleBoton(id: string) {
+      let element = document.getElementById(id);
+      if (element != null && id === 'agregar'){
+        element.style.backgroundColor = '#EC4899';
+      }
+      else if (element != null && id === 'cancelar') {
+        element.style.backgroundColor = '#D1D5DB';
+      }
+    }
+
+    
 }
