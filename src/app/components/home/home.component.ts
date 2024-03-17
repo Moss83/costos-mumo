@@ -219,9 +219,9 @@ export class HomeComponent implements OnInit {
   }
 
   cambiarPrecioIngrediente(ingrediente: Ingrediente, event: Event) {
-    let nuevoPrecio = parseFloat((event.target as HTMLInputElement).value);
-    if (!Number.isNaN(nuevoPrecio)){
-      ingrediente.precio = nuevoPrecio;
+    let nuevoPrecio = (event.target as HTMLInputElement).value;
+    if (!Number.isNaN(+nuevoPrecio) && parseFloat(nuevoPrecio) > 0){
+      ingrediente.precio = parseFloat(nuevoPrecio);
       this.ingredientesFiltrados[this.ingredientesFiltrados.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)] = ingrediente;
       this.ingredientes[this.ingredientes.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)] = ingrediente;
       this.botonesDisabled = false;

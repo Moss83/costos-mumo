@@ -37,9 +37,9 @@ export class DialogOverviewDialogIngrediente {
     }
 
     cambiarPrecioIngrediente(event: Event) {
-      let nuevoPrecio = parseFloat((event.target as HTMLInputElement).value);
-      if (!Number.isNaN(nuevoPrecio)){
-        this.nuevoIngrediente.precio = nuevoPrecio;
+      let nuevoPrecio = (event.target as HTMLInputElement).value;
+      if (!Number.isNaN(+nuevoPrecio) && parseFloat(nuevoPrecio) > 0){
+        this.nuevoIngrediente.precio = parseFloat(nuevoPrecio);
       }
       else {
         (event.target as HTMLInputElement).value = '0.00';
