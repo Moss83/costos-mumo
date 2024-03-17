@@ -2,7 +2,32 @@
   <div class="flex justify-center items-center w-full h-20 bg-indigo-600">
     <p class="text-4xl text-white font-medium pt-2">Sistema de Costos - Mumo</p>
   </div>
-  <app-home></app-home>
+  <ng-container *ngIf="!logueado">
+    <div class="flex justify-center items-center w-full h-full">
+      <div class="flex flex-col justify-between items-center w-1/3 h-1/2 bg-indigo-600 rounded-xl">
+        <div>
+          <p class="text-3xl text-white font-medium pt-4">Login</p>
+        </div>
+        <div class="pb-8 space-y-5">
+          <div class="-space-y-2">
+            <p class="text-xl text-white font-medium pl-0.5">Usuario</p>
+            <input class="w-96 h-9 border-black rounded-lg border-2 px-2 text-2xl font-medium text-black" type="text" [value]="this.usuario" (change)="cambioUsuario($event)">
+          </div>
+          <div class="-space-y-2">
+            <p class="text-xl text-white font-medium pl-0.5">Contraseña</p>
+            <input class="w-96 h-9 border-black rounded-lg border-2 px-2 text-2xl font-medium text-black" type="password" [value]="this.contrasena" (change)="cambioContrasena($event)">
+            <p [hidden]="!this.incorrectos" class="text-base text-white font-regular pt-2 pl-1">Usuario y/o contraseña incorrectos</p>
+          </div>
+        </div>
+        <div>
+          <button class="text-xl text-white font-medium bg-pink-500 rounded-xl w-[9rem] h-10 mb-4" (click)="login()" id="ingresar" (mouseover)="addStyleBoton('ingresar')" (mouseout)="removeStyleBoton('ingresar')">Ingresar</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="logueado">
+    <app-home></app-home>
+  </ng-container>
   <div class="flex w-full h-6 bg-indigo-600"></div>
 </div>
 
