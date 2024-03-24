@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { Usuario } from './interfaces/usuarios';
-import * as forge from 'node-forge';
+import { md, util } from 'node-forge';
 
 @Component({
   selector: 'app-root',
@@ -39,12 +39,12 @@ export class AppComponent implements OnInit{
   }
 
   login(): void {
-    const hashUser = forge.md.sha256.create();
-    const hashPassword = forge.md.sha256.create();
+    const hashUser = md.sha256.create();
+    const hashPassword = md.sha256.create();
     hashUser.update(this.usuario);
     hashPassword.update(this.contrasena);
-    let usuarioDigest = forge.util.encode64(hashUser.digest().data);
-    let contraseñaDigest = forge.util.encode64(hashPassword.digest().data);
+    let usuarioDigest = util.encode64(hashUser.digest().data);
+    let contraseñaDigest = util.encode64(hashPassword.digest().data);
 
     let miUsuario = this.usuarios.find((user) => user.usuario === usuarioDigest);
     if (miUsuario !== undefined && miUsuario.contraseña === contraseñaDigest) {
