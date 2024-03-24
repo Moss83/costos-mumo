@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { Usuario } from './interfaces/usuarios';
+import * as forge from 'node-forge';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,8 @@ import { Usuario } from './interfaces/usuarios';
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit{
+
+  title: string = "costos-mumo";
 
   logueado: boolean = false;
 
@@ -36,8 +39,15 @@ export class AppComponent implements OnInit{
   }
 
   login(): void {
-    let miUsuario = this.usuarios.find((user) => user.usuario === this.usuario);
-    if (miUsuario !== undefined && miUsuario.contraseña === this.contrasena) {
+    const hashUser = forge.md.sha256.create();
+    const hashPassword = forge.md.sha256.create();
+    hashUser.update(this.usuario);
+    hashPassword.update(this.contrasena);
+    let usuarioDigest = forge.util.encode64(hashUser.digest().data);
+    let contraseñaDigest = forge.util.encode64(hashPassword.digest().data);
+
+    let miUsuario = this.usuarios.find((user) => user.usuario === usuarioDigest);
+    if (miUsuario !== undefined && miUsuario.contraseña === contraseñaDigest) {
       this.logueado = true;
     }
     else {
