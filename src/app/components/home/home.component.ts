@@ -270,7 +270,7 @@ export class HomeComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
         let sendIngrediente = {
-          nombre: result.nombre,
+          nombre: result.nombre[0].toUpperCase() + result.nombre.substr(1).toLowerCase(),
           unidadmedida: result.unidadmedida,
           precio: result.precio
         }
