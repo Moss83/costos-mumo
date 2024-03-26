@@ -17,6 +17,8 @@ import { Usuario } from './interfaces/usuarios';
 })
 export class AppComponent implements OnInit{
 
+  title: string = "costos-mumo";
+
   logueado: boolean = false;
 
   incorrectos: boolean = false;
