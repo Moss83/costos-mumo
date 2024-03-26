@@ -20,6 +20,7 @@ import { Ingrediente } from '../../interfaces/ingrediente';
 import { IngredienteReceta } from '../../interfaces/ingrediente-receta';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { DialogOverviewDialogIngrediente } from '../dialog-overview-dialog/dialog-overview-dialog-ingrediente.component';
+import { DialogOverviewGuardarPrecios } from '../dialog-overview-guardar-precios/dialog-overview-guardar-precios.component';
 
 const PLUS_ICON =
   `
@@ -218,6 +219,30 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  addStyleBotonesIngrediente(id: string) {
+    if (!this.botonesDisabled){
+      let element = document.getElementById(id);
+      if (element != null && id === 'guardar'){
+        element.style.backgroundColor = '#F472B6';
+      }
+      else if (element != null && id === 'reestablecer') {
+        element.style.backgroundColor = '#E5E7EB';
+      }
+    }
+  }
+
+  removeStyleBotonesIngrediente(id: string) {
+    if (!this.botonesDisabled){
+      let element = document.getElementById(id);
+      if (element != null && id === 'guardar'){
+        element.style.backgroundColor = '#EC4899';
+      }
+      else if (element != null && id === 'reestablecer') {
+        element.style.backgroundColor = '#D1D5DB';
+      }
+    }
+  }
+
   cambiarPrecioIngrediente(ingrediente: Ingrediente, event: Event) {
     let nuevoPrecio = (event.target as HTMLInputElement).value;
     if (!Number.isNaN(+nuevoPrecio) && parseFloat(nuevoPrecio) > 0){
@@ -261,7 +286,7 @@ export class HomeComponent implements OnInit {
     }
     this.botonesDisabled = true;
     this.calcularCostosRecetas();
-    alert("Precios actualizados exitosamente!");
+    this.openDialogGuardarPrecios();
   }
 
   openDialogIngrediente(): void {
@@ -304,5 +329,11 @@ export class HomeComponent implements OnInit {
         })
       }
     });
+  }
+
+  openDialogGuardarPrecios(): void {
+    const dialogRef = this.dialog.open(DialogOverviewGuardarPrecios);
+
+    dialogRef.afterClosed().subscribe();
   }
 }
