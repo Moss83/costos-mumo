@@ -4,6 +4,17 @@ import { RouterOutlet } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { Usuario } from './interfaces/usuarios';
 
+const usuarios: Usuario[] = [
+  {
+    usuario: "silvana67",
+    contraseña: "Alquerias32"
+  },
+  {
+    usuario: "moss83",
+    contraseña: "SeriBegawan511"
+  }
+];
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -15,7 +26,7 @@ import { Usuario } from './interfaces/usuarios';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit{
+export class AppComponent {
 
   title: string = "costos-mumo";
 
@@ -23,22 +34,11 @@ export class AppComponent implements OnInit{
 
   incorrectos: boolean = false;
 
-  usuarios: Usuario[] = [];
-
   usuario: string = '';
   contrasena: string = '';
 
-  ngOnInit(): void {
-    fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/usuarios/")
-    .then((response) => response.json())
-    .catch((e) => console.error(e))
-    .then((res) => {
-      this.usuarios = res.items;
-    })
-  }
-
   login(): void {
-    let miUsuario = this.usuarios.find((user) => user.usuario === this.usuario);
+    let miUsuario = usuarios.find((user) => user.usuario === this.usuario);
     if (miUsuario !== undefined && miUsuario.contraseña === this.contrasena) {
       this.logueado = true;
     }
