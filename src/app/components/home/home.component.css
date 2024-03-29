@@ -5,6 +5,7 @@
 .example-card {
     background-color: #D1D5DB;
     max-height: 130px;
+    cursor: pointer;
 }
 
 .contenido {
