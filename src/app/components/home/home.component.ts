@@ -150,7 +150,7 @@ export class HomeComponent implements OnInit {
         this.ingredientes = r.items;
       })
       .then(() => {
-        fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientesreceta/?limit=1000")
+        fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientesreceta/?limit=1000&q={\"$orderby\":{\"idreceta\": \"asc\"}}")
         .then((response) => response.json())
         .catch((e) => console.error(e))
         .then((r) => {
