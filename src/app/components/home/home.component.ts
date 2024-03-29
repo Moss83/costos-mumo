@@ -457,8 +457,8 @@ export class HomeComponent implements OnInit {
     let costoTotal: number = 0;
     this.ingredientesSelectedRecetaOriginal.forEach(ing => {
       let ingr = this.ingredientesSelectedReceta.find(miIngrediente => miIngrediente.idingrediente === ing.idingrediente)!;
-      ingr.cantidad = this.cantidadSeleccionada * ing.cantidad / this.cantidadOriginal;
-      ingr.precio = this.cantidadSeleccionada * ing.precio / this.cantidadOriginal;
+      ingr.cantidad = parseInt((this.cantidadSeleccionada * ing.cantidad / this.cantidadOriginal).toFixed(0));
+      ingr.precio = ingr.cantidad * ing.precio / ing.cantidad;
       costoTotal += ingr.precio;
     });
     this.selectedReceta.costo = costoTotal;
