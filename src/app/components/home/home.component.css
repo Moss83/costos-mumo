@@ -4,12 +4,12 @@
 
 .example-card {
     background-color: #D1D5DB;
-    max-height: 130px;
+    max-height: 160px;
     cursor: pointer;
 }
 
 .contenido {
-    margin-bottom: -5%;
+    margin-top: 0;
 }
 
 .card-header {
