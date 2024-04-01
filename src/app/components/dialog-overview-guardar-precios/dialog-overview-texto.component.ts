@@ -1,10 +1,10 @@
-import { Component } from "@angular/core";
+import { Component, Inject } from "@angular/core";
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { MatDialogRef, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle } from "@angular/material/dialog";
+import { MatDialogRef, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 @Component({
-    selector: 'dialog-overview-guardar-precios',
-    templateUrl: './dialog-overview-guardar-precios.component.html',
+    selector: 'dialog-overview-texto',
+    templateUrl: './dialog-overview-texto.component.html',
     standalone: true,
     imports: [
       MatDialogTitle,
@@ -15,9 +15,10 @@ import { MatDialogRef, MatDialogActions, MatDialogClose, MatDialogContent, MatDi
       CommonModule
     ],
 })
-export class DialogOverviewGuardarPrecios {
+export class DialogOverviewTexto {
     constructor(
-      public dialogRef: MatDialogRef<DialogOverviewGuardarPrecios>
+      public dialogRef: MatDialogRef<DialogOverviewTexto>,
+      @Inject(MAT_DIALOG_DATA) public data: string
     ) {}
   
     onAceptarClick(): void {

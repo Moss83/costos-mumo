@@ -1,0 +1,24 @@
+<div class="flex flex-col justify-between items-center py-4 bg-indigo-600 w-[50rem] h-64">
+    <p class="text-3xl text-white font-medium">Agregar Ingrediente</p>
+    <div>
+        <form class="example-form">
+            <mat-form-field class="w-[35rem]">
+            <mat-label>Buscar ingrediente</mat-label>
+            <input type="text" matInput [formControl]="myControlIngrediente" [matAutocomplete]="auto" (ngModelChange)="controlIngrediente()" class="rounded-xl">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFnIngrediente">
+                @for (option of filteredIngredientes | async; track option) {
+                    <mat-option [value]="option">{{option.nombre}}</mat-option>
+                }
+            </mat-autocomplete>
+            </mat-form-field>
+        </form>
+    </div>
+    <div class="flex flex-row space-x-[17rem]">
+        <button class="text-xl text-black font-medium bg-gray-300 rounded-xl w-[9rem] h-10" id="cancelar" (mouseover)="addStyleBoton('cancelar')" (mouseout)="removeStyleBoton('cancelar')" (click)="onCancelarClick()">
+            Cancelar
+        </button>
+        <button [disabled]="!puedoAgregar" [ngStyle]="{'background-color': !puedoAgregar ? '#888888' : '#EC4899', 'color': !puedoAgregar ? '#DDDDDD' : '#FFFFFF'}" class="text-xl text-white font-medium bg-pink-500 rounded-xl w-[9rem] h-10" id="agregar" (mouseover)="addStyleBoton('agregar')" (mouseout)="removeStyleBoton('agregar')" (click)="onAgregarClick()">
+            Agregar
+        </button>
+    </div>
+</div>

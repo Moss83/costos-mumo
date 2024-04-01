@@ -52,7 +52,7 @@ export class DialogOverviewDialogIngrediente {
         this.nuevoIngrediente.nombre = 'Introducir nombre';
       }
       else {
-        this.nuevoIngrediente.nombre = (event.target as HTMLInputElement).value;
+        this.nuevoIngrediente.nombre = nuevoNombre;
       }
     }
 

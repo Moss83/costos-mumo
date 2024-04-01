@@ -20,13 +20,25 @@ import { Ingrediente } from '../../interfaces/ingrediente';
 import { IngredienteReceta } from '../../interfaces/ingrediente-receta';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { DialogOverviewDialogIngrediente } from '../dialog-overview-dialog/dialog-overview-dialog-ingrediente.component';
-import { DialogOverviewGuardarPrecios } from '../dialog-overview-guardar-precios/dialog-overview-guardar-precios.component';
+import { DialogOverviewTexto } from '../dialog-overview-guardar-precios/dialog-overview-texto.component';
 import { Pantallas } from '../enums/pantallas-enum';
 import { IngredienteRecetaView } from '../../interfaces/ingrediente-receta-view';
+import { IngredienteRecetaCreate } from '../../interfaces/ingrediente-receta-create';
+import { MatMenuModule } from '@angular/material/menu';
+import { DialogOverviewBuscarIngrediente } from '../dialog-overview-buscar-ingrediente/dialog-overview-buscar-ingrediente.component';
 
 const PLUS_ICON =
   `
   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#FFFFFF" version="1.1" id="Capa_1" width="600px" height="600px" viewBox="0 0 50 40" xml:space="preserve">
+    <g>
+      <path d="M41.267,18.557H26.832V4.134C26.832,1.851,24.99,0,22.707,0c-2.283,0-4.124,1.851-4.124,4.135v14.432H4.141   c-2.283,0-4.139,1.851-4.138,4.135c-0.001,1.141,0.46,2.187,1.207,2.934c0.748,0.749,1.78,1.222,2.92,1.222h14.453V41.27   c0,1.142,0.453,2.176,1.201,2.922c0.748,0.748,1.777,1.211,2.919,1.211c2.282,0,4.129-1.851,4.129-4.133V26.857h14.435   c2.283,0,4.134-1.867,4.133-4.15C45.399,20.425,43.548,18.557,41.267,18.557z"/>
+    </g>
+  </svg>
+  `;
+
+  const PLUS_GRAY_ICON =
+  `
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#374151" version="1.1" id="Capa_1" width="600px" height="600px" viewBox="0 0 50 40" xml:space="preserve">
     <g>
       <path d="M41.267,18.557H26.832V4.134C26.832,1.851,24.99,0,22.707,0c-2.283,0-4.124,1.851-4.124,4.135v14.432H4.141   c-2.283,0-4.139,1.851-4.138,4.135c-0.001,1.141,0.46,2.187,1.207,2.934c0.748,0.749,1.78,1.222,2.92,1.222h14.453V41.27   c0,1.142,0.453,2.176,1.201,2.922c0.748,0.748,1.777,1.211,2.919,1.211c2.282,0,4.129-1.851,4.129-4.133V26.857h14.435   c2.283,0,4.134-1.867,4.133-4.15C45.399,20.425,43.548,18.557,41.267,18.557z"/>
     </g>
@@ -63,6 +75,13 @@ const ENTER_ICON =
     </g>
   </svg>
   `;
+
+const TRASH_ICON = 
+  `
+  <svg width="27" height="36" viewBox="0 0 27 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10.8771 0.224487C9.70881 0.224487 8.74591 1.17239 8.74591 2.32245V3.72109H3.19604C3.10725 3.7047 3.01845 3.7047 2.92965 3.72109H1.64208C1.61988 3.72109 1.59768 3.72109 1.57548 3.72109C1.18422 3.74021 0.878975 4.06801 0.8984 4.45319C0.917825 4.83836 1.25082 5.13885 1.64208 5.11972H2.41906L4.972 33.4422C5.0608 34.4201 5.90715 35.1905 6.90335 35.1905H20.5338C21.53 35.1905 22.3764 34.4201 22.4652 33.4422L25.0181 5.11972H25.7951C26.0504 5.12246 26.289 4.99133 26.4194 4.7728C26.5471 4.55426 26.5471 4.28655 26.4194 4.06801C26.289 3.84948 26.0504 3.71835 25.7951 3.72109H18.6913V2.32245C18.6913 1.17239 17.7284 0.224487 16.5601 0.224487H10.8771ZM10.8771 1.62313H16.5601C16.9597 1.62313 17.2705 1.92908 17.2705 2.32245V3.72109H10.1667V2.32245C10.1667 1.92908 10.4775 1.62313 10.8771 1.62313ZM3.83983 5.11972H23.5973L21.0444 33.3329C21.0222 33.576 20.7586 33.7918 20.5338 33.7918H6.90335C6.67858 33.7918 6.41496 33.576 6.39277 33.3329L3.83983 5.11972ZM9.38969 7.19583C9.35917 7.20129 9.32864 7.20949 9.30089 7.21768C8.97068 7.29144 8.73758 7.58373 8.74591 7.917V30.9946C8.74313 31.2459 8.87633 31.4808 9.09832 31.6092C9.32032 31.7348 9.59226 31.7348 9.81426 31.6092C10.0363 31.4808 10.1694 31.2459 10.1667 30.9946V7.917C10.175 7.71486 10.0917 7.52091 9.94468 7.38432C9.79483 7.245 9.59226 7.17671 9.38969 7.19583ZM13.652 7.19583C13.6215 7.20129 13.5909 7.20949 13.5632 7.21768C13.233 7.29144 12.9999 7.58373 13.0082 7.917V30.9946C13.0054 31.2459 13.1386 31.4808 13.3606 31.6092C13.5826 31.7348 13.8546 31.7348 14.0766 31.6092C14.2985 31.4808 14.4317 31.2459 14.429 30.9946V7.917C14.4373 7.71486 14.354 7.52091 14.207 7.38432C14.0571 7.245 13.8546 7.17671 13.652 7.19583ZM17.9143 7.19583C17.8838 7.20129 17.8532 7.20949 17.8255 7.21768C17.4953 7.29144 17.2622 7.58373 17.2705 7.917V30.9946C17.2677 31.2459 17.4009 31.4808 17.6229 31.6092C17.8449 31.7348 18.1169 31.7348 18.3388 31.6092C18.5608 31.4808 18.694 31.2459 18.6913 30.9946V7.917C18.6996 7.71486 18.6163 7.52091 18.4693 7.38432C18.3194 7.245 18.1169 7.17671 17.9143 7.19583Z" fill="#E91E63"/>
+  </svg>
+  `;
  
 
 @Component({
@@ -79,6 +98,7 @@ const ENTER_ICON =
     MatSelectModule,
     MatFormFieldModule,
     MatProgressSpinnerModule,
+    MatMenuModule,
     DialogOverviewDialogIngrediente,
     AsyncPipe,
     FormsModule,
@@ -92,9 +112,11 @@ const ENTER_ICON =
 export class HomeComponent implements OnInit {
   constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer, public dialog: MatDialog) {
     iconRegistry.addSvgIconLiteral('plus-sign', sanitizer.bypassSecurityTrustHtml(PLUS_ICON));
+    iconRegistry.addSvgIconLiteral('plus-sign-gray', sanitizer.bypassSecurityTrustHtml(PLUS_GRAY_ICON));
     iconRegistry.addSvgIconLiteral('chef-hat', sanitizer.bypassSecurityTrustHtml(CHEF_HAT_ICON));
     iconRegistry.addSvgIconLiteral('undo', sanitizer.bypassSecurityTrustHtml(UNDO_ICON));
     iconRegistry.addSvgIconLiteral('enter', sanitizer.bypassSecurityTrustHtml(ENTER_ICON));
+    iconRegistry.addSvgIconLiteral('trash', sanitizer.bypassSecurityTrustHtml(TRASH_ICON));
   }
 
   loading: boolean = true;
@@ -134,6 +156,16 @@ export class HomeComponent implements OnInit {
   cantidadSeleccionada: number = 0;
 
   costoOriginal: number = 0;
+
+  newReceta: Receta = {
+    idreceta: 0,
+    nombre: '',
+    costo: 0,
+    rinde_unidad: 'gramos',
+    rinde_valor: 0
+  };
+
+  newRecetaIngredientes: IngredienteRecetaCreate[] = [];
 
   ngOnInit() {
     fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/?limit=1000&q={\"$orderby\":{\"nombre\": \"asc\"}}")
@@ -180,8 +212,16 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  pantallas() {
+    return Pantallas;
+  }
+
   displayFn(receta: Receta): string {
     return receta && receta.nombre ? receta.nombre : '';
+  }
+
+  displayFnIngrediente(ingrediente: Ingrediente): string {
+    return ingrediente && ingrediente.nombre ? ingrediente.nombre : '';
   }
 
   private _filterRecetas(nombre: string): Receta[] {
@@ -301,7 +341,7 @@ export class HomeComponent implements OnInit {
 
   addStyleBotonesVerReceta(id: string) {
     let element = document.getElementById(id);
-    if (element != null && (id === 'editar' || id === 'undo' || id === 'enter')){
+    if (element != null && (id === 'editar' || id === 'undo' || id === 'enter' || id === 'crear')){
       element.style.backgroundColor = '#F472B6';
     }
     else if (element != null && id === 'atras') {
@@ -311,7 +351,7 @@ export class HomeComponent implements OnInit {
 
   removeStyleBotonesVerReceta(id: string) {
     let element = document.getElementById(id);
-    if (element != null && (id === 'editar' || id === 'undo' || id === 'enter')){
+    if (element != null && (id === 'editar' || id === 'undo' || id === 'enter' || id === 'crear')){
       element.style.backgroundColor = '#EC4899';
     }
     else if (element != null && id === 'atras') {
@@ -408,7 +448,7 @@ export class HomeComponent implements OnInit {
   }
 
   openDialogGuardarPrecios(): void {
-    const dialogRef = this.dialog.open(DialogOverviewGuardarPrecios);
+    const dialogRef = this.dialog.open(DialogOverviewTexto, {data: 'Precios guardados exitosamente'});
 
     dialogRef.afterClosed().subscribe();
   }
@@ -464,13 +504,206 @@ export class HomeComponent implements OnInit {
     this.selectedReceta.costo = costoTotal;
   }
 
-  home() {
+  homeFromVerReceta() {
     this.resetCantidad();
     this.pantalla = Pantallas.HOME;
     this.selectedTab = Pantallas.RECETAS;
   }
 
-  pantallas() {
-    return Pantallas;
+  nuevaReceta() {
+    this.newReceta = {
+      idreceta: 0,
+      nombre: 'Introducir nombre',
+      costo: 0,
+      rinde_unidad: 'gramos',
+      rinde_valor: 1
+    };
+    this.newRecetaIngredientes = [];
+    this.pantalla = Pantallas.NUEVA_RECETA;
+  }
+
+  cambiarNombreReceta(event: Event) {
+    let nuevoNombre = (event.target as HTMLInputElement).value;
+    if (nuevoNombre === '') {
+      this.newReceta.nombre = 'Introducir nombre';
+    }
+    else {
+      this.newReceta.nombre = nuevoNombre;
+    }
+  }
+
+  cambiarCantidadNuevaReceta(event: Event) {
+    let nuevaCantidad = (event.target as HTMLInputElement).value;
+    if (!Number.isNaN(+nuevaCantidad) && Number.isInteger(+nuevaCantidad) && parseInt(nuevaCantidad) > 0){
+      this.newReceta.rinde_valor = parseInt(nuevaCantidad);
+    }
+    else {
+      (event.target as HTMLInputElement).value = this.newReceta.rinde_valor.toString();
+    }
+  }
+
+  cambiarUnidadMedidaReceta(event: Event) {
+    let nuevaUnidadMedida = (event.target as HTMLInputElement).value;
+    this.newReceta.rinde_unidad = nuevaUnidadMedida;
+  }
+
+  cambiarCantidadIngrediente(ingrediente: IngredienteRecetaCreate, event: Event) {
+    let nuevaCantidad = (event.target as HTMLInputElement).value;
+    if (!Number.isNaN(+nuevaCantidad) && Number.isInteger(+nuevaCantidad) && parseInt(nuevaCantidad) > 0){
+      ingrediente.cantidad = parseInt(nuevaCantidad);
+    }
+    else {
+      (event.target as HTMLInputElement).value = ingrediente.cantidad.toString();
+    }
+  }
+
+  openDialogIngredienteNuevaReceta(): void {
+    const dialogRef = this.dialog.open(DialogOverviewDialogIngrediente);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        let sendIngrediente = {
+          nombre: result.nombre[0].toUpperCase() + result.nombre.substr(1).toLowerCase(),
+          unidadmedida: result.unidadmedida,
+          precio: result.precio
+        }
+
+        fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/", {
+          method: "POST",
+          body: JSON.stringify(sendIngrediente),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then((response) => response.json())
+        .catch((e) => console.error(e))
+        .then((r) => {
+          this.newRecetaIngredientes.push({
+            idingrediente: r.idingrediente,
+            nombre: r.nombre,
+            cantidad: 1,
+            unidad: (r.unidadmedida === 'Kg') ? 'gr' : (r.unidadmedida === 'Lt') ? 'ml' : 'Un'
+          });
+        })
+      }
+    });
+  }
+
+  openDialogIngredienteExistente(): void {
+    const dialogRef = this.dialog.open(DialogOverviewBuscarIngrediente, {data: this.ingredientes});
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined && this.newRecetaIngredientes.findIndex((ing) => ing.idingrediente === result.idingrediente) === -1) {
+        this.newRecetaIngredientes.push({
+          idingrediente: result.idingrediente,
+          nombre: result.nombre,
+          cantidad: 1,
+          unidad: (result.unidadmedida === 'Kg') ? 'gr' : (result.unidadmedida === 'Lt') ? 'ml' : 'Un'
+        });
+      }
+    })
+  }
+
+  sacarIngredienteReceta(ingrediente: IngredienteRecetaCreate) {
+    let index = this.newRecetaIngredientes.findIndex(ing => ing.idingrediente === ingrediente.idingrediente);
+    this.newRecetaIngredientes.splice(index, 1);
+  }
+
+  homeFromNuevaReceta() {
+    this.loading = true;
+    this.pantalla = Pantallas.HOME;
+    this.selectedTab = Pantallas.RECETAS;
+    fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/?limit=1000&q={\"$orderby\":{\"nombre\": \"asc\"}}")
+    .then((response) => response.json())
+    .catch((e) => console.error(e))
+    .then((r) => {
+      this.recetas = r.items;
+    })
+    .then(() => {
+      fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/?limit=1000&q={\"$orderby\":{\"nombre\": \"asc\"}}")
+      .then((response) => response.json())
+      .catch((e) => console.error(e))
+      .then((r) => {
+        this.ingredientes = r.items;
+      })
+      .then(() => {
+        fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientesreceta/?limit=1000&q={\"$orderby\":{\"idreceta\": \"asc\"}}")
+        .then((response) => response.json())
+        .catch((e) => console.error(e))
+        .then((r) => {
+          this.ingredientesRecetas = r.items;
+          
+          this.ingredientesOriginal = [];
+          this.ingredientesFiltrados = [];
+          this.ingredientes.forEach((ing) => this.ingredientesOriginal.push(Object.assign({}, ing)));
+          this.ingredientes.forEach((ing) => this.ingredientesFiltrados.push(Object.assign({}, ing)));
+          this.calcularCostosRecetas();
+          this.loading = false;
+        });
+      });
+    });
+  }
+
+  async crearReceta() {
+    if (this.newReceta.nombre !== '' && this.newReceta.nombre !== 'Introducir nombre') {
+      if (this.newRecetaIngredientes.length !== 0) {
+        this.loading = true;
+        let sendReceta = {
+          nombre: this.newReceta.nombre[0].toUpperCase() + this.newReceta.nombre.substr(1).toLowerCase(),
+          rinde_valor: this.newReceta.rinde_valor,
+          rinde_unidad: this.newReceta.rinde_unidad
+        };
+
+        await fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/", {
+          method: "POST",
+          body: JSON.stringify(sendReceta),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then((response) => response.json())
+        .catch((e) => console.error(e))
+        .then(async (res) => {
+          await this.insertarIngredientesReceta(res)
+          .then(() => {
+            this.loading = false;
+            const dialogRef = this.dialog.open(DialogOverviewTexto, {data: 'Receta cargada exitosamente'})
+
+            dialogRef.afterClosed().subscribe(() => {
+              this.homeFromNuevaReceta();
+            })
+          })
+        })
+      }
+      else {
+        const dialogRef = this.dialog.open(DialogOverviewTexto, {data: 'Añadir al menos un ingrediente'});
+
+        dialogRef.afterClosed().subscribe();
+      }
+    }
+    else {
+      const dialogRef = this.dialog.open(DialogOverviewTexto, {data: 'Introducir un nombre correcto'});
+
+      dialogRef.afterClosed().subscribe();
+    }
+  }
+
+  private async insertarIngredientesReceta(receta: Receta) {
+    this.newRecetaIngredientes.forEach((ing) => {
+      let sendIngredienteReceta = {
+        idingrediente: ing.idingrediente,
+        idreceta: receta.idreceta,
+        cantidad: ing.cantidad,
+        unidadcantidad: ing.unidad
+      };
+
+      fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientesreceta/", {
+        method: "POST",
+        body: JSON.stringify(sendIngredienteReceta),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+    })
   }
 }
