@@ -365,6 +365,7 @@ export class HomeComponent implements OnInit {
 
   cambiarPrecioIngrediente(ingrediente: Ingrediente, event: Event) {
     let nuevoPrecio = (event.target as HTMLInputElement).value;
+    nuevoPrecio = nuevoPrecio.replaceAll(",", "");
     if (!Number.isNaN(+nuevoPrecio) && parseFloat(nuevoPrecio) > 0){
       ingrediente.precio = parseFloat(nuevoPrecio);
       this.ingredientesFiltrados[this.ingredientesFiltrados.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)] = ingrediente;
@@ -485,6 +486,7 @@ export class HomeComponent implements OnInit {
 
   cambiarCantidadReceta(event: Event) {
     let nuevaCantidad = (event.target as HTMLInputElement).value;
+    nuevaCantidad = nuevaCantidad.replaceAll(",", "");
     if (!Number.isNaN(+nuevaCantidad) && Number.isInteger(+nuevaCantidad) && parseInt(nuevaCantidad) > 0){
       this.selectedReceta.rinde_valor = parseInt(nuevaCantidad);
       this.cantidadSeleccionada = parseInt(nuevaCantidad);
@@ -564,6 +566,7 @@ export class HomeComponent implements OnInit {
 
   cambiarCantidadNuevaReceta(event: Event) {
     let nuevaCantidad = (event.target as HTMLInputElement).value;
+    nuevaCantidad = nuevaCantidad.replaceAll(",", "");
     if (!Number.isNaN(+nuevaCantidad) && Number.isInteger(+nuevaCantidad) && parseInt(nuevaCantidad) > 0){
       this.newReceta.rinde_valor = parseInt(nuevaCantidad);
     }
@@ -579,6 +582,7 @@ export class HomeComponent implements OnInit {
 
   cambiarCantidadIngrediente(ingrediente: IngredienteRecetaCreate, event: Event) {
     let nuevaCantidad = (event.target as HTMLInputElement).value;
+    nuevaCantidad = nuevaCantidad.replaceAll(",", "");
     if (!Number.isNaN(+nuevaCantidad) && Number.isInteger(+nuevaCantidad) && parseInt(nuevaCantidad) > 0){
       ingrediente.cantidad = parseInt(nuevaCantidad);
     }
@@ -671,6 +675,13 @@ export class HomeComponent implements OnInit {
           this.ingredientes.forEach((ing) => this.ingredientesOriginal.push(Object.assign({}, ing)));
           this.ingredientes.forEach((ing) => this.ingredientesFiltrados.push(Object.assign({}, ing)));
           this.calcularCostosRecetas();
+          this.filteredRecetas = this.myControlReceta.valueChanges.pipe(
+            startWith(''),
+            map(value => {
+              const nombre = typeof value === 'string' ? value : value?.nombre;
+              return nombre ? this._filterRecetas(nombre as string) : this.recetas.slice();
+            })
+          );
           this.loading = false;
         });
       });
