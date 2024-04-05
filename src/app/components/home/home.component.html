@@ -44,7 +44,7 @@
                             <div class="contenido">
                                 <div class="flex flex-row justify-between">
                                     <p class="text-xl font-semibold">Rinde</p>
-                                    <p class="text-xl font-semibold">{{ receta.rinde_valor }} {{ (receta.rinde_valor === 1 && receta.rinde_unidad === 'unidades') ? 'unidad' : (receta.rinde_valor === 1 && receta.rinde_unidad === 'porciones') ? 'porción' : receta.rinde_unidad }}</p>
+                                    <p class="text-xl font-semibold">{{ receta.rinde_valor | number: '1.0-0' }} {{ (receta.rinde_valor === 1 && receta.rinde_unidad === 'unidades') ? 'unidad' : (receta.rinde_valor === 1 && receta.rinde_unidad === 'porciones') ? 'porción' : receta.rinde_unidad }}</p>
                                 </div>
                                 <div class="flex flex-row justify-between">
                                     <p class="text-xl font-semibold">Costo</p>
