@@ -20,7 +20,7 @@
           </div>
         </div>
         <div class="">
-          <button class="text-xl text-white font-medium bg-pink-500 rounded-xl w-[9rem] h-10 mb-4" (click)="login()" id="ingresar" (mouseover)="addStyleBoton('ingresar')" (mouseout)="removeStyleBoton('ingresar')">Ingresar</button>
+          <button [disabled]="!bdPrendida" [ngStyle]="{'background-color': !bdPrendida ? '#888888' : '#EC4899', 'color': !bdPrendida ? '#DDDDDD' : '#FFFFFF'}" class="text-xl text-white font-medium bg-pink-500 rounded-xl w-[9rem] h-10 mb-4" (click)="login()" id="ingresar" (mouseover)="addStyleBoton('ingresar')" (mouseout)="removeStyleBoton('ingresar')">Ingresar</button>
         </div>
       </div>
     </div>
