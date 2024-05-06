@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { HomeComponent } from './components/home/home.component';
 import { Usuario } from './interfaces/usuarios';
+import { DialogOverviewTexto } from './components/dialog-overview-guardar-precios/dialog-overview-texto.component';
 
 const usuarios: Usuario[] = [
   {
@@ -26,7 +28,9 @@ const usuarios: Usuario[] = [
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+
+  constructor(public dialog: MatDialog){}
 
   title: string = "costos-mumo";
 
@@ -34,8 +38,23 @@ export class AppComponent {
 
   incorrectos: boolean = false;
 
+  bdPrendida: boolean = false;
+
   usuario: string = '';
   contrasena: string = '';
+
+  ngOnInit(): void {
+    fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/?limit=1")
+    .then(r => {
+      if (r.status === 200) {
+        this.bdPrendida = true;
+      }
+      else {
+        const dialogRef = this.dialog.open(DialogOverviewTexto, {data: 'Sistema inactivo'});
+        dialogRef.afterClosed().subscribe();
+      }
+    });
+  }
 
   login(): void {
     let miUsuario = usuarios.find((user) => user.usuario === this.usuario);
@@ -59,14 +78,14 @@ export class AppComponent {
 
   addStyleBoton(id: string){
     let element = document.getElementById(id);
-    if (element != null){
+    if (this.bdPrendida && element != null){
       element.style.backgroundColor = '#F472B6';
     }
   }
 
   removeStyleBoton(id: string) {
     let element = document.getElementById(id);
-    if (element != null){
+    if (this.bdPrendida && element != null){
       element.style.backgroundColor = '#EC4899';
     }
   }
