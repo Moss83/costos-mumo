@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
-import { AsyncPipe, CommonModule } from '@angular/common';
-import { MatDialogRef, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle } from "@angular/material/dialog";
+import { CommonModule } from '@angular/common';
+import { MatDialogRef } from "@angular/material/dialog";
 import { Ingrediente } from "../../interfaces/ingrediente";
 
 @Component({
@@ -8,11 +8,6 @@ import { Ingrediente } from "../../interfaces/ingrediente";
     templateUrl: './dialog-overview-dialog-ingrediente.component.html',
     standalone: true,
     imports: [
-      MatDialogTitle,
-      MatDialogContent,
-      MatDialogActions,
-      MatDialogClose,
-      AsyncPipe,
       CommonModule
     ],
 })

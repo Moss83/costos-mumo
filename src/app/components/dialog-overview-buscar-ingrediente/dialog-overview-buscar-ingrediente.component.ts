@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { MatDialogRef, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -14,10 +14,6 @@ import { Ingrediente } from "../../interfaces/ingrediente";
     templateUrl: './dialog-overview-buscar-ingrediente.component.html',
     standalone: true,
     imports: [
-      MatDialogTitle,
-      MatDialogContent,
-      MatDialogActions,
-      MatDialogClose,
       MatInputModule,
       MatFormFieldModule,
       MatAutocompleteModule,
