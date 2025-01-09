@@ -99,7 +99,6 @@ const TRASH_ICON =
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatMenuModule,
-    DialogOverviewDialogIngrediente,
     AsyncPipe,
     FormsModule,
     ReactiveFormsModule,
@@ -480,6 +479,7 @@ export class HomeComponent implements OnInit {
       }
       this.ingredientesSelectedReceta.push(ingView);
     });
+    this.ordenarIngredientesReceta();
     this.ingredientesSelectedReceta.forEach((ing) => this.ingredientesSelectedRecetaOriginal.push(Object.assign({}, ing)));
     this.pantalla = Pantallas.VER_RECETA;
   }
@@ -815,6 +815,24 @@ export class HomeComponent implements OnInit {
         }
       })
     })
+  }
+
+  private ordenarIngredientesReceta() {
+    let desordenado;
+    for (let i = 0; i < this.ingredientesSelectedReceta.length - 1; i++) {
+        desordenado = false;
+        for (let j = 0; j < this.ingredientesSelectedReceta.length - 1 - i; j++) {
+            if (this.ingredientesSelectedReceta[j].nombre > this.ingredientesSelectedReceta[j + 1].nombre) {
+                let aux = this.ingredientesSelectedReceta[j];
+                this.ingredientesSelectedReceta[j] = this.ingredientesSelectedReceta[j + 1];
+                this.ingredientesSelectedReceta[j + 1] = aux;
+                desordenado = true;
+            }
+        }
+        if (!desordenado) {
+            break;
+        }
+    }
   }
 
   editarReceta() {

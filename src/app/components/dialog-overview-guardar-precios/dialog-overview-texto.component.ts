@@ -1,17 +1,12 @@
 import { Component, Inject } from "@angular/core";
-import { AsyncPipe, CommonModule } from '@angular/common';
-import { MatDialogRef, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { CommonModule } from '@angular/common';
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 @Component({
     selector: 'dialog-overview-texto',
     templateUrl: './dialog-overview-texto.component.html',
     standalone: true,
     imports: [
-      MatDialogTitle,
-      MatDialogContent,
-      MatDialogActions,
-      MatDialogClose,
-      AsyncPipe,
       CommonModule
     ],
 })

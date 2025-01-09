@@ -1,27 +1,13 @@
-# CostosMumo
+# Costos Mumo
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.2.3.
+Plataforma de gestión de costos para recetas y sus respectivos ingredientes.
 
-## Development server
+## Funcionalidades
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+- Crear nuevas recetas con su título, rendimiento e ingredientes.
+- Crear nuevos ingredientes a partir de la creación de una receta o de manera independiente.
+- Calcular el costo de una receta a partir de los costos de los ingredientes.
+- Editar las recetas, agregando, modificando o eliminando ingredientes.
+- Editar el costo de los ingredientes.
+- Ver reflejado el costo de las recetas a partir de la modificación del costo de los ingredientes.
+- Calcular proporciones a partir de recetas existentes, modificando cantidad y costo de los ingredientes.
