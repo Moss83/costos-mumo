@@ -20,7 +20,8 @@ export class DialogOverviewDialogIngrediente {
       nombre: 'Introducir nombre',
       idingrediente: 0,
       precio: 0,
-      unidadmedida: 'Kg'
+      unidadmedida: 'Kg',
+      es_receta: 0
     };
   
     onCancelarClick(): void {
