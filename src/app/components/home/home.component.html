@@ -1,10 +1,13 @@
 <div class="m-5">
     <ng-container *ngIf="pantalla == pantallas().HOME">
-        <div class="flex w-[28rem] h-12 bg-gray-300 rounded-full justify-around items-center">
-            <button [ngStyle]="{'background-color': (selectedTab === pantallas().RECETAS) ? '#EC4899' : '#D1D5DB'}" class="rounded-full w-[13rem] h-8" (click)="changeTab(pantallas().RECETAS)">
+        <div class="flex w-[51rem] h-12 bg-gray-300 rounded-full justify-around items-center">
+            <button [ngStyle]="{'background-color': (selectedTab === pantallas().RECETAS) ? '#EC4899' : '#D1D5DB'}" class="rounded-full w-[15rem] h-8" (click)="changeTab(pantallas().RECETAS)">
                 <p [ngStyle]="{'color': (selectedTab === pantallas().RECETAS) ? '#FFFFFF' : '#000000'}" class="text-xl font-medium pt-0.5">Recetas</p>
             </button>
-            <button [ngStyle]="{'background-color': (selectedTab === pantallas().INGREDIENTES) ? '#EC4899' : '#D1D5DB'}" class="rounded-full w-[13rem] h-8" (click)="changeTab(pantallas().INGREDIENTES)">
+            <button [ngStyle]="{'background-color': (selectedTab === pantallas().PREPARACIONES) ? '#EC4899' : '#D1D5DB'}" class="rounded-full w-[15rem] h-8" (click)="changeTab(pantallas().PREPARACIONES)">
+                <p [ngStyle]="{'color': (selectedTab === pantallas().PREPARACIONES) ? '#FFFFFF' : '#000000'}" class="text-xl font-medium pt-0.5">Preparaciones</p>
+            </button>
+            <button [ngStyle]="{'background-color': (selectedTab === pantallas().INGREDIENTES) ? '#EC4899' : '#D1D5DB'}" class="rounded-full w-[15rem] h-8" (click)="changeTab(pantallas().INGREDIENTES)">
                 <p [ngStyle]="{'color': (selectedTab === pantallas().INGREDIENTES) ? '#FFFFFF' : '#000000'}" class="text-xl font-medium pt-0.5">Ingredientes</p>
             </button>
         </div>
@@ -16,7 +19,7 @@
                         <mat-form-field class="w-[28rem]">
                         <mat-label>Buscar receta</mat-label>
                         <input type="text" matInput [formControl]="myControlReceta" [matAutocomplete]="auto" (ngModelChange)="recetaEscritaVacia()" class="rounded-xl">
-                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFnReceta">
                             @for (option of filteredRecetas | async; track option) {
                                 <mat-option [value]="option">{{option.nombre}}</mat-option>
                             }
@@ -24,7 +27,7 @@
                         </mat-form-field>
                     </form>
                 </div>
-                <button class="flex justify-center items-center space-x-2 text-xl text-white font-medium pt-1 bg-pink-500 rounded-xl w-[13rem] h-12" id="receta" (mouseover)="addStyleBotonNuevo('receta')" (mouseout)="removeStyleBotonNuevo('receta')" (click)="nuevaReceta(newReceta, [], 'Nueva')">
+                <button class="flex justify-center items-center space-x-2 text-xl text-white font-medium pt-1 bg-pink-500 rounded-xl w-[13rem] h-12" id="receta" (mouseover)="addStyleBotonNuevo('receta')" (mouseout)="removeStyleBotonNuevo('receta')" (click)="nuevaReceta(newReceta, [], 'NuevaR')">
                     <mat-icon svgIcon="plus-sign" aria-hidden="true" aria-label="Plus sign" class="mb-2 mr-2"></mat-icon>
                     <p class="pt-2">Nueva receta</p>
                 </button>
@@ -49,6 +52,54 @@
                                 <div class="flex flex-row justify-between">
                                     <p class="text-xl font-semibold">Costo</p>
                                     <p class="text-xl font-semibold">$ {{ receta.costo | number: '1.2-2' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="selectedTab === pantallas().PREPARACIONES">
+            <div class="flex flex-row w-full h-auto justify-between mt-8">
+                <div>
+                    <form class="example-form">
+                        <mat-form-field class="w-[28rem]">
+                        <mat-label>Buscar preparación</mat-label>
+                        <input type="text" matInput [formControl]="myControlPreparacion" [matAutocomplete]="auto" (ngModelChange)="preparacionEscritaVacia()" class="rounded-xl">
+                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFnPreparacion">
+                            @for (option of filteredPreparaciones | async; track option) {
+                                <mat-option [value]="option">{{option.nombre}}</mat-option>
+                            }
+                        </mat-autocomplete>
+                        </mat-form-field>
+                    </form>
+                </div>
+                <button class="flex justify-center items-center space-x-2 text-xl text-white font-medium pt-1 bg-pink-500 rounded-xl w-[16rem] h-12" id="preparacion" (mouseover)="addStyleBotonNuevo('preparacion')" (mouseout)="removeStyleBotonNuevo('preparacion')" (click)="nuevaReceta(newReceta, [], 'NuevaP')">
+                    <mat-icon svgIcon="plus-sign" aria-hidden="true" aria-label="Plus sign" class="mb-2 mr-2"></mat-icon>
+                    <p class="pt-2">Nueva preparación</p>
+                </button>
+            </div>
+
+            <ng-container *ngIf="loading">
+                <div class="flex flex-row justify-center my-[168px]">
+                    <mat-spinner></mat-spinner>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="!loading">
+                <div class="overflow-y-auto h-[28rem] grid grid-cols-4 gap-4">
+                    <ng-container *ngFor="let preparacion of preparacionesFiltradas">
+                        <div class="flex flex-col justify-between bg-gray-300 rounded-xl h-48 px-4 pt-4 pb-1 cursor-pointer" [id]="preparacion.idreceta.toString()" (mouseover)="addStyleReceta(preparacion.idreceta.toString())" (mouseout)="removeStyleReceta(preparacion.idreceta.toString())" (click)="verReceta(preparacion)">
+                            <p class="text-2xl text-center leading-8 font-medium">{{ preparacion.nombre }}</p>
+                            <div class="contenido">
+                                <div class="flex flex-row justify-between">
+                                    <p class="text-xl font-semibold">Rinde</p>
+                                    <p class="text-xl font-semibold">{{ preparacion.rinde_valor | number: '1.0-0' }} {{ (preparacion.rinde_valor === 1 && preparacion.rinde_unidad === 'unidades') ? 'unidad' : (preparacion.rinde_valor === 1 && preparacion.rinde_unidad === 'porciones') ? 'porción' : preparacion.rinde_unidad }}</p>
+                                </div>
+                                <div class="flex flex-row justify-between">
+                                    <p class="text-xl font-semibold">Costo</p>
+                                    <p class="text-xl font-semibold">$ {{ preparacion.costo | number: '1.2-2' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -91,7 +142,7 @@
                                             <p>$</p>
                                         </div>
                                         <div>
-                                            <input type="text" inputmode="numeric" value="{{ ingrediente.precio | number: '1.2-2'}}" [value]="ingrediente.precio | number: '1.2-2'" (change)="cambiarPrecioIngrediente(ingrediente, $event)" class="w-32 h-9 -ml-2 mb-3 border-black rounded-lg border-2 pl-2">
+                                            <input type="text" inputmode="numeric" value="{{ ingrediente.precio | number: '1.2-2'}}" [value]="ingrediente.precio | number: '1.2-2'" [disabled]="ingrediente.es_receta === 1" (change)="cambiarPrecioIngrediente(ingrediente, $event)" class="w-32 h-9 -ml-2 mb-3 border-black rounded-lg border-2 pl-2">
                                         </div>
                                         <div class="absolute left-32 mt-1">
                                             <p>/</p>
@@ -126,7 +177,7 @@
     <ng-container *ngIf="pantalla == pantallas().VER_RECETA">
         <div class="flex flex-row space-x-2">
             <mat-icon svgIcon="chef-hat" aria-hidden="true" aria-label="Chef hat" [ngStyle]="{'width': '40px', 'height': '40px'}"></mat-icon>
-            <p class="text-3xl text-black font-medium pt-1.5">Receta</p>
+            <p class="text-3xl text-black font-medium pt-1.5">{{ selectedReceta.es_ingrediente === 0 ? 'Receta' : 'Preparación' }}</p>
         </div>
         <div class="flex flex-row justify-between mt-2 text-2xl text-black font-medium">
             <p class="pl-12">{{ selectedReceta.nombre }}</p>
@@ -172,7 +223,7 @@
             </div>
             <div class="flex flex-row pr-8 space-x-4">
                 <button class="text-xl font-medium rounded-xl bg-gray-300 w-[10rem] h-10 pt-1.5" id="atras" (mouseover)="addStyleBotonesVerReceta('atras')" (mouseout)="removeStyleBotonesVerReceta('atras')" (click)="homeFromVerReceta()">
-                    <p>Atras</p>
+                    <p>Atrás</p>
                 </button>
                 <button class="text-xl text-white font-medium bg-pink-500 rounded-xl w-[10rem] h-10 pt-1.5" id="editar" (mouseover)="addStyleBotonesVerReceta('editar')" (mouseout)="removeStyleBotonesVerReceta('editar')" (click)="editarReceta()">
                     <p>Editar</p>
@@ -185,7 +236,7 @@
         <ng-container *ngIf="!loading">
             <div class="flex flex-row space-x-2">
                 <mat-icon svgIcon="chef-hat" aria-hidden="true" aria-label="Chef hat" [ngStyle]="{'width': '40px', 'height': '40px'}"></mat-icon>
-                <p class="text-3xl text-black font-medium pt-1.5">{{ modoVista }} Receta</p>
+                <p class="text-3xl text-black font-medium pt-1.5">{{ (modoVista === 'Editar' ? 'Editar ' : 'Nueva ') + (newReceta.es_ingrediente === 1 ? 'Preparación' : 'Receta') }}</p>
             </div>
             <div class="flex flex-row justify-between mt-2 text-2xl text-black font-medium">
                 <input type="text" value="{{ newReceta.nombre }}" [value]="newReceta.nombre" class="w-[30rem] h-9 ml-12 border-black rounded-lg border-2 px-2" (change)="cambiarNombreReceta($event)">
@@ -194,7 +245,6 @@
                     <input type="text" inputmode="numeric" value="{{ newReceta.rinde_valor | number: '1.0-0' }}" [value]="newReceta.rinde_valor | number: '1.0-0'" class="w-20 h-9 border-black rounded-lg border-2 pl-2 ml-2" (change)="cambiarCantidadNuevaReceta($event)">
                     <select class="border-black rounded-lg border-2 h-9 w-40 px-2 pb-0.5 ml-2" name="unidadmedida" [value]="newReceta.rinde_unidad" (change)="cambiarUnidadMedidaReceta($event)">
                         <option value="gramos">gramos</option>
-                        <option value="porciones">porciones</option>
                         <option value="unidades">unidades</option>
                     </select>
                 </div>
@@ -229,10 +279,10 @@
             </div>
             <div class="flex flex-row mt-10 justify-center space-x-6">
                 <button class="text-xl font-medium rounded-xl bg-gray-300 w-[12rem] h-12 pt-2.5" id="atras" (mouseover)="addStyleBotonesVerReceta('atras')" (mouseout)="removeStyleBotonesVerReceta('atras')" (click)="homeFromNuevaReceta()">
-                    <p>Atras</p>
+                    <p>Atrás</p>
                 </button>
                 <button class="text-xl text-white font-medium bg-pink-500 rounded-xl w-[12rem] h-12 pt-2.5" id="crear" (mouseover)="addStyleBotonesVerReceta('crear')" (mouseout)="removeStyleBotonesVerReceta('crear')" (click)="crearReceta()">
-                    <p>{{modoVista === 'Nueva' ?  'Crear' : 'Editar'}}</p>
+                    <p>{{modoVista === 'Editar' ?  'Editar' : 'Crear'}}</p>
                 </button>
             </div>
         </ng-container>
