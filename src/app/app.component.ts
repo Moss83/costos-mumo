@@ -5,17 +5,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { HomeComponent } from './components/home/home.component';
 import { Usuario } from './interfaces/usuarios';
 import { DialogOverviewTexto } from './components/dialog-overview-guardar-precios/dialog-overview-texto.component';
+import { sha256 } from 'js-sha256';
 
-const usuarios: Usuario[] = [
-  {
-    usuario: "silvana67",
-    contraseña: "Alquerias32"
-  },
-  {
-    usuario: "moss83",
-    contraseña: "SeriBegawan511"
-  }
-];
 
 @Component({
   selector: 'app-root',
@@ -43,11 +34,18 @@ export class AppComponent implements OnInit {
   usuario: string = '';
   contrasena: string = '';
 
+  usuarios: Usuario[] = [];
+
   ngOnInit(): void {
-    fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/?limit=1")
-    .then(r => {
-      if (r.status === 200) {
+    fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/usuarios/")
+    .then(res => {
+      if (res.status === 200) {
         this.bdPrendida = true;
+        res.json()
+        .then(r => {
+            this.usuarios = r.items;
+            this.bdPrendida = true;
+        });
       }
       else {
         const dialogRef = this.dialog.open(DialogOverviewTexto, {data: 'Sistema inactivo'});
@@ -57,8 +55,10 @@ export class AppComponent implements OnInit {
   }
 
   login(): void {
-    let miUsuario = usuarios.find((user) => user.usuario === this.usuario);
-    if (miUsuario !== undefined && miUsuario.contraseña === this.contrasena) {
+    let usuarioHash = sha256(this.usuario);
+    let contraseñaHash = sha256(this.contrasena);
+    let miUsuario = this.usuarios.find((user) => user.usuario === usuarioHash);
+    if (miUsuario !== undefined && miUsuario.contrasena === contraseñaHash) {
       this.logueado = true;
     }
     else {
