@@ -580,7 +580,7 @@ export class HomeComponent implements OnInit {
   homeFromVerReceta() {
     this.resetCantidad();
     this.pantalla = Pantallas.HOME;
-    this.selectedTab = Pantallas.RECETAS;
+    this.selectedTab = this.selectedReceta.es_ingrediente === 1 ? Pantallas.PREPARACIONES : Pantallas.RECETAS;
   }
 
   nuevaReceta(receta: Receta, ingredientes: IngredienteRecetaView[], modo: string) {
@@ -716,7 +716,7 @@ export class HomeComponent implements OnInit {
   homeFromNuevaReceta(ingredienteOPreparacionEditada: boolean = false) {
     this.loading = true;
     this.pantalla = Pantallas.HOME;
-    this.selectedTab = Pantallas.RECETAS;
+    this.selectedTab = this.newReceta.es_ingrediente === 1 ? Pantallas.PREPARACIONES : Pantallas.RECETAS;
     if (ingredienteOPreparacionEditada) {
         this.recalcularIngredientesPreparaciones();
     }
