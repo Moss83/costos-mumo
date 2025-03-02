@@ -1,4 +1,5 @@
 export interface Usuario {
-    usuario: string,
-    contraseña: string
+    idusuario: number;
+    usuario: string;
+    contrasena: string;
 }
