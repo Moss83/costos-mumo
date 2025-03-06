@@ -4,4 +4,5 @@ export interface Ingrediente {
     unidadmedida: string;
     precio: number;
     es_receta: number;
+    idreceta: number;
 }

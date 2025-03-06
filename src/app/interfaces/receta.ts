@@ -5,4 +5,5 @@ export interface Receta {
     rinde_unidad: string;
     costo: number;
     es_ingrediente: number;
+    idingrediente: number;
 }
