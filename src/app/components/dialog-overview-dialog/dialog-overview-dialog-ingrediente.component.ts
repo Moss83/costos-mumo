@@ -21,7 +21,8 @@ export class DialogOverviewDialogIngrediente {
       idingrediente: 0,
       precio: 0,
       unidadmedida: 'Kg',
-      es_receta: 0
+      es_receta: 0,
+      idreceta: 0
     };
   
     onCancelarClick(): void {

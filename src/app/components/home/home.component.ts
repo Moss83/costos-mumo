@@ -148,7 +148,8 @@ export class HomeComponent implements OnInit {
     costo: 0,
     rinde_unidad: '',
     rinde_valor: 0,
-    es_ingrediente: 0
+    es_ingrediente: 0,
+    idingrediente: 0
   };
 
   ingredientesSelectedReceta: IngredienteRecetaView[] = [];
@@ -167,7 +168,8 @@ export class HomeComponent implements OnInit {
     costo: 0,
     rinde_unidad: 'gramos',
     rinde_valor: 1,
-    es_ingrediente: 0
+    es_ingrediente: 0,
+    idingrediente: 0
   };
 
   newRecetaIngredientes: IngredienteRecetaCreate[] = [];
@@ -449,7 +451,8 @@ export class HomeComponent implements OnInit {
           nombre: ingrediente.nombre,
           unidadmedida: ingrediente.unidadmedida,
           precio: ingrediente.precio,
-          es_receta: ingrediente.es_receta
+          es_receta: ingrediente.es_receta,
+          idreceta: ingrediente.idreceta
         };
         await fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/" + ingrediente.idingrediente.toString(), {
           method: "PUT",
@@ -481,7 +484,8 @@ export class HomeComponent implements OnInit {
           nombre: result.nombre[0].toUpperCase() + result.nombre.substr(1).toLowerCase(),
           unidadmedida: result.unidadmedida,
           precio: result.precio,
-          es_receta: 0
+          es_receta: 0,
+          idreceta: 0
         }
 
         fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/", {
@@ -591,7 +595,8 @@ export class HomeComponent implements OnInit {
           costo: 0,
           rinde_unidad: 'gramos',
           rinde_valor: 1,
-          es_ingrediente: modo === 'NuevaR' ? 0 : 1
+          es_ingrediente: modo === 'NuevaR' ? 0 : 1,
+          idingrediente: 0
       };
     }
     else {
@@ -665,7 +670,8 @@ export class HomeComponent implements OnInit {
           nombre: result.nombre[0].toUpperCase() + result.nombre.substr(1).toLowerCase(),
           unidadmedida: result.unidadmedida,
           precio: result.precio,
-          es_receta: 0
+          es_receta: 0,
+          idreceta: 0
         }
 
         fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/", {
@@ -785,7 +791,8 @@ export class HomeComponent implements OnInit {
             nombre: this.newReceta.nombre[0].toUpperCase() + this.newReceta.nombre.substr(1).toLowerCase(),
             rinde_valor: this.newReceta.rinde_valor,
             rinde_unidad: this.newReceta.rinde_unidad,
-            es_ingrediente: this.modoVista === 'NuevaR' ? 0 : 1
+            es_ingrediente: this.modoVista === 'NuevaR' ? 0 : 1,
+            idingrediente: 0
           };
   
           await fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/", {
@@ -828,8 +835,9 @@ export class HomeComponent implements OnInit {
                             nombre: esta_receta.nombre,
                             unidadmedida: esta_receta.rinde_unidad === 'gramos' ? 'Kg' : 'Un',
                             precio: parseFloat(costo.toFixed(2)),
-                            es_receta: 1
-                        }
+                            es_receta: 1,
+                            idreceta: esta_receta.idreceta
+                        };
 
                         await fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/", {
                             method: "POST",
@@ -838,13 +846,25 @@ export class HomeComponent implements OnInit {
                               'Content-Type': 'application/json'
                             }
                         })
+                        .then(async (resp) => resp.json())
                         .catch((e) => console.error(e))
-                        .then(async () => {
-                            this.loading = false;
-                            const dialogRef = this.dialog.open(DialogOverviewTexto, {data: 'Preparación cargada exitosamente'})
-                
-                            dialogRef.afterClosed().subscribe(() => {
-                                this.homeFromNuevaReceta();
+                        .then(async (respIng) => {
+                            sendReceta.idingrediente = respIng.idingrediente;
+                            await fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/" + esta_receta.idreceta.toString(), {
+                                method: "PUT",
+                                body: JSON.stringify(sendReceta),
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .catch((ee) => console.error(ee))
+                            .then(() => {
+                                this.loading = false;
+                                const dialogRef = this.dialog.open(DialogOverviewTexto, {data: 'Preparación cargada exitosamente'})
+                    
+                                dialogRef.afterClosed().subscribe(() => {
+                                    this.homeFromNuevaReceta();
+                                })
                             })
                         })
                     })
@@ -865,7 +885,8 @@ export class HomeComponent implements OnInit {
             nombre: this.newReceta.nombre[0].toUpperCase() + this.newReceta.nombre.substr(1).toLowerCase(),
             rinde_valor: this.newReceta.rinde_valor,
             rinde_unidad: this.newReceta.rinde_unidad,
-            es_ingrediente: this.newReceta.es_ingrediente
+            es_ingrediente: this.newReceta.es_ingrediente,
+            idingrediente: this.newReceta.idingrediente
           };
 
           await fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/recetas/" + this.newReceta.idreceta, {
@@ -916,10 +937,10 @@ export class HomeComponent implements OnInit {
                             nombre: this.newReceta.nombre,
                             unidadmedida: this.newReceta.rinde_unidad === 'gramos' ? 'Kg' : 'Un',
                             precio: parseFloat(costo.toFixed(2)),
-                            es_receta: 1
+                            es_receta: 1,
+                            idreceta: this.newReceta.idreceta
                         };
-                        let miIdIngrediente = this.ingredientes.find((ing) => ing.nombre === preparacion.nombre)!.idingrediente;
-                        await fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/" + miIdIngrediente, {
+                        await fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/" + this.newReceta.idingrediente, {
                             method: "PUT",
                             body: JSON.stringify(preparacion),
                             headers: {
@@ -930,9 +951,9 @@ export class HomeComponent implements OnInit {
                         .then(async () => {
                             let ingredientePrep = {
                                 ...preparacion,
-                                idingrediente: miIdIngrediente
+                                idingrediente: this.newReceta.idingrediente
                             };
-                            this.ingredientes = this.ingredientes.filter(ing => ing.idingrediente !== miIdIngrediente);
+                            this.ingredientes = this.ingredientes.filter(ing => ing.idingrediente !== this.newReceta.idingrediente);
                             this.ingredientes.push(ingredientePrep);
                             this.loading = false;
                             const dialogRef = this.dialog.open(DialogOverviewTexto, {data: 'Preparación editada exitosamente'})
@@ -1077,11 +1098,11 @@ export class HomeComponent implements OnInit {
             }
             costo = parseFloat(costo.toFixed(2));
 
-            let ingredientePreparacion = this.ingredientes.find(ing => ing.nombre === preparacion.nombre)!;
+            let ingredientePreparacion = this.ingredientes.find(ing => ing.idingrediente === preparacion.idingrediente)!;
 
             if (costo !== ingredientePreparacion.precio) {
                 ingredientePreparacion.precio = costo;
-                this.ingredientes = this.ingredientes.filter(ing => ing.nombre !== preparacion.nombre);
+                this.ingredientes = this.ingredientes.filter(ing => ing.idingrediente !== preparacion.idingrediente);
                 this.ingredientes.push(ingredientePreparacion);
                 ingredientesPreparacionesActualizados.push(ingredientePreparacion);
                 actualizado = true;
@@ -1093,7 +1114,8 @@ export class HomeComponent implements OnInit {
             nombre: ing.nombre,
             precio: ing.precio,
             unidadmedida: ing.unidadmedida,
-            es_receta: ing.es_receta
+            es_receta: ing.es_receta,
+            idreceta: ing.idreceta
         };
         await fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/" + ing.idingrediente, {
             method: "PUT",
