@@ -26,6 +26,8 @@ import { IngredienteRecetaView } from '../../interfaces/ingrediente-receta-view'
 import { IngredienteRecetaCreate } from '../../interfaces/ingrediente-receta-create';
 import { MatMenuModule } from '@angular/material/menu';
 import { DialogOverviewBuscarIngrediente } from '../dialog-overview-buscar-ingrediente/dialog-overview-buscar-ingrediente.component';
+import { DialogOverviewEditarIngredientes } from '../dialog-overview-editar-ingredientes/dialog-overview-editar-ingredientes.component';
+import { IngredienteEditado } from '../../interfaces/ingrediente-editado';
 
 const PLUS_ICON =
   `
@@ -213,7 +215,10 @@ export class HomeComponent implements OnInit {
           this.calcularCostosPreparaciones();
 
           this.ingredientes.forEach((ing) => this.ingredientesOriginal.push(Object.assign({}, ing)));
-          this.ingredientes.forEach((ing) => this.ingredientesFiltrados.push(Object.assign({}, ing)));
+          this.ingredientes.forEach((ing) => {
+            ing.isEditado = false;
+            this.ingredientesFiltrados.push(Object.assign({}, ing))
+          });
           this.filteredRecetas = this.myControlReceta.valueChanges.pipe(
             startWith(''),
             map(value => {
@@ -354,14 +359,14 @@ export class HomeComponent implements OnInit {
   addStyleIngrediente(id: string) {
     let element = document.getElementById(id);
     if (element != null){
-      element.style.backgroundColor = '#E8E8E8';
+      element.style.backgroundColor = this.ingredientesFiltrados.find(ing => ing.idingrediente === parseInt(id))!.isEditado ? '#FFF497' : '#E8E8E8';
     }
   }
 
   removeStyleIngrediente(id: string) {
     let element = document.getElementById(id);
     if (element != null){
-      element.style.backgroundColor = '#FFFFFF';
+      element.style.backgroundColor = this.ingredientesFiltrados.find(ing => ing.idingrediente === parseInt(id))!.isEditado ? '#FBE52B' : '#FFFFFF';
     }
   }
 
@@ -428,6 +433,7 @@ export class HomeComponent implements OnInit {
     nuevoPrecio = nuevoPrecio.replaceAll(",", "");
     if (!Number.isNaN(+nuevoPrecio) && parseFloat(nuevoPrecio) > 0){
       ingrediente.precio = parseFloat(nuevoPrecio);
+      ingrediente.isEditado = true;
       this.ingredientesFiltrados[this.ingredientesFiltrados.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)] = ingrediente;
       this.ingredientes[this.ingredientes.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)] = ingrediente;
       this.botonesDisabled = false;
@@ -438,41 +444,86 @@ export class HomeComponent implements OnInit {
   }
 
   reestablecerPrecios() {
-    this.ingredientesFiltrados.forEach((ing) => ing.precio = this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ingr) => ingr.idingrediente === ing.idingrediente)].precio);
+    this.ingredientesFiltrados.forEach((ing) => {
+        ing.precio = this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ingr) => ingr.idingrediente === ing.idingrediente)].precio
+        ing.isEditado = false;
+    });
     this.ingredientes.forEach((ing) => ing.precio = this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ingr) => ingr.idingrediente === ing.idingrediente)].precio);
     this.botonesDisabled = true;
   }
 
-  async guardarPrecios() {
-    this.loading = true;
-    for (let ingrediente of this.ingredientes) {
-      if (ingrediente.precio !== this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)].precio) {
+  atrasFromEditarIngredientes() {
+    this.reestablecerPrecios();
+    this.changeTab(Pantallas.INGREDIENTES);
+  }
+
+  async guardarPrecios(ingredientes: IngredienteEditado[]) {
+    for (let ingrediente of ingredientes) {
         let sendIngrediente = {
-          nombre: ingrediente.nombre,
-          unidadmedida: ingrediente.unidadmedida,
-          precio: ingrediente.precio,
-          es_receta: ingrediente.es_receta,
-          idreceta: ingrediente.idreceta
+            nombre: ingrediente.nombre,
+            unidadmedida: ingrediente.unidadmedida,
+            precio: ingrediente.precioActual,
+            es_receta: ingrediente.es_receta,
+            idreceta: ingrediente.idreceta
         };
         await fetch("https://g851fb2b7286839-mumodatabase.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/ingredientes/" + ingrediente.idingrediente.toString(), {
-          method: "PUT",
-          body: JSON.stringify(sendIngrediente),
-          headers: {
+            method: "PUT",
+            body: JSON.stringify(sendIngrediente),
+            headers: {
             'Content-Type': 'application/json'
-          }
+            }
         })
         .catch((e) => console.error(e))
         .then(() => {
-          this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)].precio = ingrediente.precio;
-          this.ingredientes[this.ingredientes.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)].precio = ingrediente.precio;
+            this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)].precio = ingrediente.precioActual;
+            this.ingredientes[this.ingredientes.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)].precio = ingrediente.precioActual;
         })
+    }
+  }
+
+  openDialogEditarIngredientes(): void {
+    let ingredientesEditados: IngredienteEditado[] = [];
+    
+    for (let ingrediente of this.ingredientes) {
+      let ingredienteOriginal = this.ingredientesOriginal[this.ingredientesOriginal.findIndex((ing) => ing.idingrediente === ingrediente.idingrediente)];
+      if (ingrediente.precio !== ingredienteOriginal.precio) {
+        ingredientesEditados.push({
+            idingrediente: ingrediente.idingrediente,
+            nombre: ingrediente.nombre,
+            unidadmedida: ingrediente.unidadmedida,
+            es_receta: ingrediente.es_receta,
+            idreceta: ingrediente.idreceta,
+            precioAnterior: ingredienteOriginal.precio,
+            precioActual: ingrediente.precio,
+            checked: true
+        });
       }
     }
-    this.botonesDisabled = true;
-    this.calcularCostosRecetas();
-    this.calcularCostosPreparaciones();
-    this.loading = false;
-    this.openDialogGuardarPrecios();
+
+    const dialogRef = this.dialog.open(DialogOverviewEditarIngredientes, {data: ingredientesEditados});
+
+    dialogRef.afterClosed().subscribe((result: IngredienteEditado[]) => {
+        if (result !== undefined) {
+            if (result.some(ing => ing.checked)) {
+                this.loading = true;
+                let ingredientesConfirmados: IngredienteEditado[] = [];
+                result.forEach(ing => ing.checked ? ingredientesConfirmados.push(ing) : null);
+                this.guardarPrecios(ingredientesConfirmados);
+                this.calcularCostosRecetas();
+                this.calcularCostosPreparaciones();
+                this.loading = false;
+                this.openDialogGuardarPrecios();
+            }
+            else {
+                result.forEach(ing => {
+                    this.ingredientesFiltrados[this.ingredientesFiltrados.findIndex(original => original.idingrediente === ing.idingrediente)].precio = ing.precioAnterior;
+                })
+                this.openDialogPreciosSinCambios();
+            }
+            this.ingredientesFiltrados.forEach(ing => ing.isEditado = false);
+            this.botonesDisabled = true;
+        }
+    });
   }
 
   openDialogIngrediente(): void {
@@ -505,7 +556,10 @@ export class HomeComponent implements OnInit {
             this.ingredientesOriginal = [];
             this.ingredientesFiltrados = [];
             this.ingredientes.forEach((ing) => this.ingredientesOriginal.push(Object.assign({}, ing)));
-            this.ingredientes.forEach((ing) => this.ingredientesFiltrados.push(Object.assign({}, ing)));
+            this.ingredientes.forEach((ing) => {
+                ing.isEditado = false;
+                this.ingredientesFiltrados.push(Object.assign({}, ing))
+            });
             this.filteredIngredientes = this.myControlIngrediente.valueChanges.pipe(
               startWith(''),
               map(value => {
@@ -525,6 +579,10 @@ export class HomeComponent implements OnInit {
     dialogRef.afterClosed().subscribe(() => {
         this.homeFromNuevaReceta(true);
     });
+  }
+
+  openDialogPreciosSinCambios(): void {
+    const dialogRef = this.dialog.open(DialogOverviewTexto, {data: "No se registraron cambios"});
   }
 
   verReceta(receta: Receta): void {
@@ -951,7 +1009,8 @@ export class HomeComponent implements OnInit {
                         .then(async () => {
                             let ingredientePrep = {
                                 ...preparacion,
-                                idingrediente: this.newReceta.idingrediente
+                                idingrediente: this.newReceta.idingrediente,
+                                isEditado: false
                             };
                             this.ingredientes = this.ingredientes.filter(ing => ing.idingrediente !== this.newReceta.idingrediente);
                             this.ingredientes.push(ingredientePrep);

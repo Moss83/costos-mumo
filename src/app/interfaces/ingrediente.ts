@@ -5,4 +5,5 @@ export interface Ingrediente {
     precio: number;
     es_receta: number;
     idreceta: number;
+    isEditado: boolean;
 }
