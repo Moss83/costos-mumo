@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {DomSanitizer} from '@angular/platform-browser';
 import { Receta } from '../../interfaces/receta';
@@ -101,6 +102,7 @@ const TRASH_ICON =
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatMenuModule,
+    MatTooltipModule,
     AsyncPipe,
     FormsModule,
     ReactiveFormsModule,
