@@ -243,10 +243,10 @@
                 <p class="">Rinde:</p>
                 <input type="text" inputmode="numeric" value="{{ selectedReceta.rinde_valor | number: '1.0-0' }}" [value]="selectedReceta.rinde_valor | number: '1.0-0'" class="w-20 h-9 border-black rounded-lg border-2 pl-2 ml-2" (change)="cambiarCantidadReceta($event)">
                 <p class="pl-2">{{ selectedReceta.rinde_unidad }}</p>
-                <button class="bg-pink-500 rounded-xl w-12 h-9 ml-4" id="undo" (mouseover)="addStyleBotonesVerReceta('undo')" (mouseout)="removeStyleBotonesVerReceta('undo')" (click)="resetCantidad()">
+                <button class="bg-pink-500 rounded-xl w-12 h-9 ml-4" id="undo" matTooltip="Restablecer cantidad" matTooltipPosition="above" (mouseover)="addStyleBotonesVerReceta('undo')" (mouseout)="removeStyleBotonesVerReceta('undo')" (click)="resetCantidad()">
                     <mat-icon svgIcon="undo" aria-hidden="true" aria-label="Undo" [ngStyle]="{'margin-top': '5px'}"></mat-icon>
                 </button>
-                <button class="bg-pink-500 rounded-xl w-12 h-9 ml-2" id="enter" (mouseover)="addStyleBotonesVerReceta('enter')" (mouseout)="removeStyleBotonesVerReceta('enter')" (click)="calcularConversion()">
+                <button class="bg-pink-500 rounded-xl w-12 h-9 ml-2" id="enter" matTooltip="Calcular" matTooltipPosition="above" (mouseover)="addStyleBotonesVerReceta('enter')" (mouseout)="removeStyleBotonesVerReceta('enter')" (click)="calcularConversion()">
                     <mat-icon svgIcon="enter" aria-hidden="true" aria-label="Enter" [ngStyle]="{'margin-top': '5px'}"></mat-icon>
                 </button>
             </div>
@@ -313,7 +313,7 @@
                         <ng-container *ngFor="let ingrediente of newRecetaIngredientes">
                             <div [id]="ingrediente.idingrediente.toString()" (mouseover)="addStyleIngrediente(ingrediente.idingrediente.toString())" (mouseout)="removeStyleIngrediente(ingrediente.idingrediente.toString())" class="flex relative items-center text-2xl font-medium justify-between bg-white rounded-2xl w-11/12 h-14 pl-4 pr-8 pt-3 mt-4">
                                 <div class="flex flex-row">
-                                    <button (click)="sacarIngredienteReceta(ingrediente)">
+                                    <button (click)="sacarIngredienteReceta(ingrediente)" matTooltip="Eliminar" matTooltipPosition="left">
                                         <mat-icon svgIcon="trash" aria-hidden="true" aria-label="Trash" [ngStyle]="{'width': '30px', 'height': '30px'}" class="mr-2"></mat-icon>
                                     </button>
                                     <p>{{ ingrediente.nombre }}</p>
